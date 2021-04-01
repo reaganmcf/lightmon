@@ -11,7 +11,7 @@ env:
 
 jobs:
   build:
-    name: Test on Run tests
+    name: Run
     runs-on: macos-latest
 
     steps:
