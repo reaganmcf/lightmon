@@ -2,22 +2,18 @@ name: lightmon
 version: "0.0.1"
 author: Reagan McFarland <me@reaganmcf.com>, Alay Shah
 about: A light-weight, cross-platform, language agnostic \"run code on file change\" tool, inspired by Nodemon
-args:
-  - watch:
-      help: Pattern to watch
-      short: w
-      long: watch
-      value_name: watch_pattern
-      takes_value: true
 subcommands:
   - rust:
       about: Use rust preset for lightmon
+  - node:
+      about: Ues node preset for lightmon
+      args:
   - python:
       about: Use python preset for lightmon
       args:
           - entry:
                 short: e
-                long: entry
+                long: entry_file
                 value_name: entry
-                about: Entry file to run on file changes
+                help: Entry file to run on file changes
                 required: true

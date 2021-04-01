@@ -1,7 +1,15 @@
 use clap::{App, ArgMatches};
 
+pub enum SupportedLanguage {
+  RUST,
+  NODE
+}
+
 pub struct Cli {
-  pub watch_pattern: String, // file pattern to watch
+  pub watch_patterns: Vec<String>, // file patterns to watch
+  pub project_language: SupportedLanguage,
+  pub exec_command: String, // subcommand that was used for
+  pub entry_file: Option<String>, // entry file, only applicable for particular configuraitons
 }
 
 impl Cli {
@@ -9,21 +17,27 @@ impl Cli {
     let yaml = load_yaml!("cli.yaml");
     let matches: ArgMatches = App::from_yaml(yaml).get_matches();
     
-    /*
-     * To determine the watch pattern, we do the following:
-     *  1. It is set manually via --watch "value"
-     *  2. One of the language flags has been set
-     *  3. We should determine the language automatically by scanning the directory
-     */
-
-    let mut watch_pattern: &str = "";
+    let mut watch_patterns: Vec<String> = Vec::new();
+    let project_language: SupportedLanguage;
+    let exec_command: String;
+    let entry_file: Option<String> = None;
     
-    // 1. Check if manually set
-    if let Some(watch_pattern_arg) = matches.value_of("watch") {
-      watch_pattern = &watch_pattern_arg;
+    if matches.is_present("rust") {
+      watch_patterns.push("*.rust".to_string());
+      watch_patterns.push("Cargo.toml".to_string());
+      project_language = SupportedLanguage::RUST;
+      exec_command = "cargo build; cargo run".to_string();
+    } else if matches.is_present("node") {
+      watch_patterns.push("*js".to_string());
+      watch_patterns.push("*.jsx".to_string());
+      project_language = SupportedLanguage::NODE;
+      exec_command = "npm start".to_string();
+    } else {
+      eprintln!("Argument configuration not yet supported!");
+      std::process::exit(1);
     }
     
     // we can safely unwrap here because this argument is required
-    Cli { watch_pattern: watch_pattern.to_string() }
+    Cli { watch_patterns, project_language, exec_command, entry_file}
   }
 }
