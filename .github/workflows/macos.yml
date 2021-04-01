@@ -1,4 +1,4 @@
-name: Rust
+name: Run tests on macOS
 
 on:
   push:
@@ -11,11 +11,8 @@ env:
 
 jobs:
   build:
-    name: Test on ${{ matrix.os }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+    name: Test on Run tests
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v2
