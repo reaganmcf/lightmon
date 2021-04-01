@@ -5,6 +5,15 @@ pub enum SupportedLanguage {
   NODE
 }
 
+impl std::fmt::Display for SupportedLanguage {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    match self {
+      &SupportedLanguage::RUST => write!(f, "rust"),
+      &SupportedLanguage::NODE => write!(f, "node") 
+    }
+  }
+}
+
 pub struct Cli {
   pub watch_patterns: Vec<String>, // file patterns to watch
   pub project_language: SupportedLanguage,
@@ -37,7 +46,6 @@ impl Cli {
       std::process::exit(1);
     }
     
-    // we can safely unwrap here because this argument is required
-    Cli { watch_patterns, project_language, exec_command, entry_file}
+    Cli { watch_patterns, project_language, exec_command, entry_file }
   }
 }
