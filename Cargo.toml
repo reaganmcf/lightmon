@@ -9,3 +9,5 @@ edition = "2018"
 [dependencies]
 notify = "~4.0.0"
 clap = {version = "~2.27.0", features = ["yaml"]}
+assert_cmd = "1.0.3"
+predicates = "1"
