@@ -32,12 +32,12 @@ impl Cli {
     let entry_file: Option<String> = None;
     
     if matches.is_present("rust") {
-      watch_patterns.push("*.rust".to_string());
+      watch_patterns.push("*.rs".to_string());
       watch_patterns.push("Cargo.toml".to_string());
       project_language = SupportedLanguage::RUST;
       exec_command = "cargo build; cargo run".to_string();
     } else if matches.is_present("node") {
-      watch_patterns.push("*js".to_string());
+      watch_patterns.push("*.js".to_string());
       watch_patterns.push("*.jsx".to_string());
       project_language = SupportedLanguage::NODE;
       exec_command = "npm start".to_string();
