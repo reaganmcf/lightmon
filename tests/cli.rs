@@ -3,7 +3,7 @@ extern crate predicates;
 
 use assert_cmd::prelude::*;
 use predicates::prelude::*;
-use std::process::Command;
+use std::{io::Read, process::Command};
 
 #[test]
 fn no_configuration_fails() -> Result<() , Box<dyn std::error::Error>> {
@@ -21,26 +21,6 @@ fn unsupported_configuration_fails() -> Result<(), Box<dyn std::error::Error>> {
   Ok(())
 }
 
-#[test]
-fn rust_mode_parses_correctly() -> Result<(), Box<dyn std::error::Error>> {
-  let mut cmd = Command::cargo_bin("lightmon")?;
-
-  cmd.arg("rust");
-  cmd.assert()
-    .success()
-    .stdout(predicate::str::contains("rust"));
-
-  Ok(())
-}
-
-#[test]
-fn node_mode_parses_correctly() -> Result<(), Box<dyn std::error::Error>> {
-  let mut cmd = Command::cargo_bin("lightmon")?;
-
-  cmd.arg("node");
-  cmd.assert()
-    .success()
-    .stdout(predicate::str::contains("node"));
-
-  Ok(())
-}
+//TODO tests for valid configurations. The issue right now though is that
+// when you spawn with a valid configuration, the process won't exit. This makes it a
+// lot harder to test, so going to have to figure it out later
