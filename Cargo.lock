@@ -245,6 +245,7 @@ dependencies = [
  "clap",
  "notify",
  "predicates",
+ "walkdir",
 ]
 
 [[package]]
