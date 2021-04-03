@@ -1,26 +1,24 @@
 extern crate notify;
 extern crate walkdir;
 
-use notify::{Watcher, RecursiveMode, watcher};
-use std::{process::Command, sync::mpsc::channel};
+use notify::{DebouncedEvent, RecursiveMode, Watcher, watcher};
+use std::{sync::mpsc::{Sender}, thread::{JoinHandle}};
 use std::time::Duration;
 use walkdir::WalkDir;
 use std::collections::HashSet;
 
-pub use crate::cli::Cli; 
+pub use crate::cli::Cli;
 
-pub fn start(cli_args: Cli) {
-    // Create a channel to receive the events.
-    let (tx, rx) = channel();
-
-    // Create a watcher object, delivering debounced events.
-    // The notification back-end is selected based on the platform.
-    let mut watcher = watcher(tx, Duration::from_millis(100)).unwrap();
+pub fn start(watch_patterns: Vec<String>, tx: Sender<DebouncedEvent>) -> JoinHandle<()> {
+  // Create a watcher object, delivering debounced events.
+  // The notification back-end is selected based on the platform.
+  let watch_thread = std::thread::spawn(move|| {
+    let mut watcher = watcher(tx, Duration::from_secs(1)).unwrap();
 
     let mut explicit_files_to_watch: HashSet<String> = HashSet::new();
     let mut file_types_to_watch: HashSet<String> = HashSet::new();
-  
-    for pattern in cli_args.watch_patterns {
+
+    for pattern in watch_patterns {
       // *.xxx pattern
       if pattern.starts_with("*.") {
         file_types_to_watch.insert(pattern[pattern.find(".").unwrap()..pattern.len()].to_string());
@@ -43,24 +41,10 @@ pub fn start(cli_args: Cli) {
       }
     }
 
-    // TODO use cli args instead
-    let mut exec_cmd = Command::new("cargo");
-    exec_cmd.arg("build");
-    
     loop {
-      match rx.recv() {
-       Ok(event) => {
-        println!("Changes detected... Restarting using {:?}", exec_cmd);
-        let res = exec_cmd.spawn();
-        if let Ok(child) = res {
-          println!("Started child {:?}", child);
-        } else {
-          println!("FAILED {:?}", res.err());
-        }
-       },
-       Err(e) => {
-         println!("watch error: {:?}", e);
-       }
-      }
+      
     }
+  });
+
+  watch_thread
 }
