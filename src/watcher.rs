@@ -10,7 +10,7 @@ use std::collections::HashSet;
 pub use crate::cli::Cli;
 pub use crate::LightmonEvent;
 
-pub fn start(watch_patterns: Vec<String>, kill_exec_sender: Sender<LightmonEvent>) -> JoinHandle<()> {
+pub fn start(watch_patterns: Vec<String>, lightmon_event_sender: Sender<LightmonEvent>) -> JoinHandle<()> {
   let watch_thread = std::thread::spawn(move|| {
     let (tx, rx) = channel();
     let mut watcher = watcher(tx, Duration::from_secs(1)).unwrap();
@@ -46,7 +46,7 @@ pub fn start(watch_patterns: Vec<String>, kill_exec_sender: Sender<LightmonEvent
       match rx.recv() {
         Ok(event) => {
           println!("changes detected {:?}\n Sending restart event to exec", event);
-          match kill_exec_sender.send(LightmonEvent::KillAndRestartChild) {
+          match lightmon_event_sender.send(LightmonEvent::KillAndRestartChild) {
             Ok(_) => {}
             Err(e) => eprintln!("Failed to send event to exec thread! Reason: {:?}", e)
           }

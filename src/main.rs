@@ -16,16 +16,16 @@ pub enum LightmonEvent {
 fn main() {
   let cli_args: Cli = Cli::new();
   
-  // get kill_exec channel
-  let (kill_exec_sender, kill_exec_receiver) = channel();
+  // get ligthmon event channel
+  let (lightmon_event_sender, lightmon_event_receiver) = channel();
 
-  watcher::start(cli_args.watch_patterns, kill_exec_sender);
+  watcher::start(cli_args.watch_patterns, lightmon_event_sender);
   
   println!("lightmon started ({} mode)", cli_args.project_language);
 
   loop {
-    if let Ok(kill_exec_receiever) = kill_exec_receiver.recv() {
-      match kill_exec_receiever {
+    if let Ok(lightmon_event) = lightmon_event_receiver.recv() {
+      match lightmon_event {
         LightmonEvent::KillAndRestartChild => {
           println!("KILL AND RESTART RECEIEVED");
           exec::start(cli_args.exec_command.clone());
