@@ -1,18 +1,18 @@
 extern crate notify;
 extern crate walkdir;
 
-use notify::{DebouncedEvent, RecursiveMode, Watcher, watcher};
-use std::{sync::mpsc::{Sender}, thread::{JoinHandle}};
+use notify::{RecursiveMode, Watcher, watcher};
+use std::{sync::mpsc::{channel, Sender}, thread::{JoinHandle}};
 use std::time::Duration;
 use walkdir::WalkDir;
 use std::collections::HashSet;
 
 pub use crate::cli::Cli;
+pub use crate::LightmonEvent;
 
-pub fn start(watch_patterns: Vec<String>, tx: Sender<DebouncedEvent>) -> JoinHandle<()> {
-  // Create a watcher object, delivering debounced events.
-  // The notification back-end is selected based on the platform.
+pub fn start(watch_patterns: Vec<String>, kill_exec_sender: Sender<LightmonEvent>) -> JoinHandle<()> {
   let watch_thread = std::thread::spawn(move|| {
+    let (tx, rx) = channel();
     let mut watcher = watcher(tx, Duration::from_secs(1)).unwrap();
 
     let mut explicit_files_to_watch: HashSet<String> = HashSet::new();
@@ -42,7 +42,19 @@ pub fn start(watch_patterns: Vec<String>, tx: Sender<DebouncedEvent>) -> JoinHan
     }
 
     loop {
-      
+      println!("checking events...");
+      match rx.recv() {
+        Ok(event) => {
+          println!("changes detected {:?}\n Sending restart event to exec", event);
+          match kill_exec_sender.send(LightmonEvent::KillAndRestartChild) {
+            Ok(_) => {}
+            Err(e) => eprintln!("Failed to send event to exec thread! Reason: {:?}", e)
+          }
+        },
+        Err(e) => {
+          println!("err {:?}", e);
+        }
+      }
     }
   });
 

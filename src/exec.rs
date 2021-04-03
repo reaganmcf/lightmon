@@ -1,25 +1,16 @@
-extern crate notify;
-use notify::DebouncedEvent;
-use std::{sync::mpsc::Receiver, thread};
+use std::{thread};
+use std::process::{Command, Stdio};
 
 pub use crate::cli::Cli;
+pub use crate::LightmonEvent;
 
-pub fn start(exec_command: String, rx: Receiver<DebouncedEvent>) -> std::thread::JoinHandle<()> {
+pub fn start(exec_command: String) -> std::thread::JoinHandle<()> {
   let exec_thread = thread::spawn(move|| {
     println!("thread started");
-    loop {
-      println!("checking events...");
-      match rx.recv() {
-        Ok(event) => {
-          println!("changes detected {:?}", event);
-        },
-        Err(e) => {
-          println!("err {:?}", e);
-        }
-      }
-    }
+    let cmd = Command::new("echo").arg("test output from cmd").stdout(Stdio::inherit()).output().unwrap();
+    println!("{:?}", cmd);
+    
   }); 
   return exec_thread;
 }
-
 

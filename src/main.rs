@@ -6,22 +6,37 @@ mod watcher;
 mod exec;
 
 use cli::Cli;
-use notify::DebouncedEvent;
-use std::{sync::mpsc::{Receiver, channel}};
+use std::sync::mpsc::channel;
+
+pub enum LightmonEvent {
+  KillChild,
+  KillAndRestartChild
+}
 
 fn main() {
   let cli_args: Cli = Cli::new();
   
-  // get notify channels
-  let (tx, rx) = channel();
+  // get kill_exec channel
+  let (kill_exec_sender, kill_exec_receiver) = channel();
 
-  let watch_thread = watcher::start(cli_args.watch_patterns, tx.clone());
-  let exec_thread = exec::start(cli_args.exec_command, rx);
+  watcher::start(cli_args.watch_patterns, kill_exec_sender);
   
   println!("lightmon started ({} mode)", cli_args.project_language);
 
-  watch_thread.join();
-  exec_thread.join();
+  loop {
+    if let Ok(kill_exec_receiever) = kill_exec_receiver.recv() {
+      match kill_exec_receiever {
+        LightmonEvent::KillAndRestartChild => {
+          println!("KILL AND RESTART RECEIEVED");
+          exec::start(cli_args.exec_command.clone());
+        },
+        LightmonEvent::KillChild => {
+          println!("KILL RECEIEVED");
+        }
+      }
+    }
+  }
+
 
 }
 

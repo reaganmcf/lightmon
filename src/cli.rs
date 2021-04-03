@@ -1,15 +1,15 @@
 use clap::{App, ArgMatches};
 
 pub enum SupportedLanguage {
-  RUST,
-  NODE
+  Rust,
+  Node
 }
 
 impl std::fmt::Display for SupportedLanguage {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     match self {
-      SupportedLanguage::RUST => write!(f, "rust"),
-      SupportedLanguage::NODE => write!(f, "node") 
+      SupportedLanguage::Rust => write!(f, "rust"),
+      SupportedLanguage::Node => write!(f, "node") 
     }
   }
 }
@@ -32,12 +32,12 @@ impl Cli {
     if matches.is_present("rust") {
       watch_patterns.push("*.rs".to_string());
       watch_patterns.push("Cargo.toml".to_string());
-      project_language = SupportedLanguage::RUST;
+      project_language = SupportedLanguage::Rust;
       exec_command = "cargo build; cargo run".to_string();
     } else if matches.is_present("node") {
       watch_patterns.push("*.js".to_string());
       watch_patterns.push("*.jsx".to_string());
-      project_language = SupportedLanguage::NODE;
+      project_language = SupportedLanguage::Node;
       exec_command = "npm start".to_string();
     } else {
       eprintln!("Argument configuration not yet supported!");

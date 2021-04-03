@@ -2,8 +2,8 @@ extern crate assert_cmd;
 extern crate predicates;
 
 use assert_cmd::prelude::*;
-use predicates::prelude::*;
-use std::{io::Read, process::Command};
+//use predicates::prelude::*;
+use std::{process::Command};
 
 #[test]
 fn no_configuration_fails() -> Result<() , Box<dyn std::error::Error>> {
