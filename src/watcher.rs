@@ -36,7 +36,7 @@ pub fn start(watch_patterns: Vec<String>, lightmon_event_sender: Sender<Lightmon
       should_watch = should_watch || f_name.ends_with(".rs");
       
       if should_watch {
-        println!("Started watch on {:?}", entry.path().to_str().unwrap());
+        debug!("Started watch on {:?}", entry.path().to_str().unwrap());
         watcher.watch(entry.path().to_str().unwrap(),RecursiveMode::NonRecursive).unwrap();
       }
     }
