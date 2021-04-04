@@ -42,17 +42,18 @@ pub fn start(watch_patterns: Vec<String>, lightmon_event_sender: Sender<Lightmon
     }
 
     loop {
-      println!("checking events...");
+      debug!("checking events...");
       match rx.recv() {
         Ok(event) => {
-          println!("changes detected {:?}\n Sending restart event to exec", event);
+          println!("Changes detected, Restarting...");
+          debug!("changes detected {:?}\n Sending restart event to exec", event);
           match lightmon_event_sender.send(LightmonEvent::KillAndRestartChild) {
             Ok(_) => {}
-            Err(e) => eprintln!("Failed to send event to exec thread! Reason: {:?}", e)
+            Err(e) => error!("Failed to send event to exec thread! Reason: {:?}", e)
           }
         },
         Err(e) => {
-          println!("err {:?}", e);
+          error!("Failed to receieve event from channel {:?}", e);
         }
       }
     }

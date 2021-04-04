@@ -2,12 +2,16 @@ name: lightmon
 version: "0.0.1"
 author: Reagan McFarland <me@reaganmcf.com>, Alay Shah
 about: A light-weight, cross-platform, language agnostic \"run code on file change\" tool, inspired by Nodemon
+args:
+  - verbose:
+      short: v
+      long: verbose
+      help: Use verbose output
 subcommands:
   - rust:
       about: Use rust preset for lightmon
   - node:
       about: Ues node preset for lightmon
-      args:
   - python:
       about: Use python preset for lightmon
       args:

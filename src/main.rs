@@ -1,4 +1,6 @@
 #[macro_use]
+extern crate log;
+#[macro_use]
 extern crate clap;
 extern crate notify;
 mod cli;
@@ -27,11 +29,11 @@ fn main() {
     if let Ok(lightmon_event) = lightmon_event_receiver.recv() {
       match lightmon_event {
         LightmonEvent::KillAndRestartChild => {
-          println!("KILL AND RESTART RECEIEVED");
+          debug!("KILL AND RESTART RECEIEVED");
           exec::start(cli_args.exec_command.clone());
         },
         LightmonEvent::KillChild => {
-          println!("KILL RECEIEVED");
+          debug!("KILL RECEIEVED");
         }
       }
     }
