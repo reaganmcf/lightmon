@@ -36,5 +36,5 @@ subcommands:
             long: watch-patterns
             takes_value: true
             value_name: patterns
-            help: The file types to watch for changes, seperated by commas. e.g. ".py, .rs"
+            help: The file types to watch for changes, seperated by commas. e.g. ".py,.rs"
             required: true
