@@ -15,9 +15,26 @@ subcommands:
   - python:
       about: Use python preset for lightmon
       args:
-          - entry:
-                short: e
-                long: entry_file
-                value_name: entry
-                help: Entry file to run on file changes
-                required: true
+        - entry:
+            short: e
+            long: entry_file
+            value_name: entry
+            help: Entry file to run on file changes
+            required: true
+  - shell:
+      about: Use a custom shell script for unsupported languages
+      args:
+        - script:
+            short: s
+            long: script-path
+            takes_value: true
+            value_name: path
+            help: The path to the shell script
+            required: true
+        - watch:
+            short: w
+            long: watch-patterns
+            takes_value: true
+            value_name: patterns
+            help: The file types to watch for changes, seperated by commas. e.g. ".py, .rs"
+            required: true

@@ -5,14 +5,16 @@ use log::LevelFilter;
 #[derive(Debug)]
 pub enum SupportedLanguage {
   Rust,
-  Node
+  Node,
+  Shell
 }
 
 impl std::fmt::Display for SupportedLanguage {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     match self {
       SupportedLanguage::Rust => write!(f, "rust"),
-      SupportedLanguage::Node => write!(f, "node") 
+      SupportedLanguage::Node => write!(f, "node"),
+      SupportedLanguage::Shell => write!(f, "shell")
     }
   }
 }
@@ -39,20 +41,42 @@ impl Cli {
     let project_language: SupportedLanguage;
     let exec_command: String;
     
-    if matches.is_present("rust") {
-      debug!("Configuring for rust mode...");
-      watch_patterns.push("*.rs".to_string());
-      watch_patterns.push("Cargo.toml".to_string());
-      project_language = SupportedLanguage::Rust;
-      exec_command = "cargo build; cargo run".to_string();
-    } else if matches.is_present("node") {
-      watch_patterns.push("*.js".to_string());
-      watch_patterns.push("*.jsx".to_string());
-      project_language = SupportedLanguage::Node;
-      exec_command = "npm start".to_string();
-    } else {
-      error!("Argument configuration not yet supported!");
-      std::process::exit(1);
+    match matches.subcommand(){
+      ("rust", Some(sub_matcher)) =>{
+        debug!("Configuring for rust mode...");
+        project_language = SupportedLanguage::Rust;
+        watch_patterns.push("*.rs".to_string());
+        watch_patterns.push("Cargo.toml".to_string());
+        exec_command = "cargo build; cargo run".to_string();
+      },
+      ("node", Some(sub_matcher)) =>{
+        debug!("Configuring for node mode...");
+        project_language = SupportedLanguage::Node;
+        watch_patterns.push("*.js".to_string());
+        watch_patterns.push("*.jsx".to_string());
+        exec_command = "npm start".to_string();
+      },
+      ("python", Some(sub_matcher)) =>{
+        error!("Argument configuration not yet supported!");
+        std::process::exit(1);
+      },
+      ("shell", Some(sub_matcher)) => {
+        debug!("Configuring for shell mode...");
+        project_language = SupportedLanguage::Shell;
+        debug!("Script Path = {:?}", sub_matcher.value_of("script"));
+        debug!("Watch Pattern = {:?}", sub_matcher.value_of("watch"));
+        let split = sub_matcher.value_of("watch").unwrap().split(",");
+        for s in split{
+          watch_patterns.push(format!("*{}", s.to_string()));
+        }
+        exec_command = format!("bash {}",sub_matcher.value_of("script").unwrap());
+        debug!("{:?}", exec_command);
+      },
+      _ => {
+        error!("Argument configuration not yet supported!");
+        std::process::exit(1);
+      }
+
     }
     
     let ret = Cli { watch_patterns, project_language, exec_command };
