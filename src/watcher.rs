@@ -1,7 +1,7 @@
 extern crate notify;
 extern crate walkdir;
 
-use notify::{RecursiveMode, Watcher, watcher};
+use notify::{RecursiveMode, Watcher};
 use notify::poll::PollWatcher;
 use std::{sync::mpsc::{channel, Sender}, thread::JoinHandle};
 use std::ffi::OsStr;

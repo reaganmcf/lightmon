@@ -23,7 +23,7 @@ impl std::fmt::Display for SupportedLanguage {
 pub struct Cli {
   pub watch_patterns: Vec<String>, // file patterns to watch
   pub project_language: SupportedLanguage,
-  pub exec_command: String, // subcommand that was used for
+  pub exec_commands: Vec<String>, // list of commands to run
 }
 
 impl Cli {
@@ -39,7 +39,7 @@ impl Cli {
     
     let mut watch_patterns: Vec<String> = Vec::new();
     let project_language: SupportedLanguage;
-    let exec_command: String;
+    let mut exec_commands: Vec<String> = Vec::new();
     
     match matches.subcommand(){
       ("rust", Some(sub_matcher)) =>{
@@ -47,14 +47,15 @@ impl Cli {
         project_language = SupportedLanguage::Rust;
         watch_patterns.push("*.rs".to_string());
         watch_patterns.push("Cargo.toml".to_string());
-        exec_command = "cargo build; cargo run".to_string();
+        exec_commands.push("cargo build".to_string()); 
+        exec_commands.push("cargo run".to_string());
       },
       ("node", Some(sub_matcher)) =>{
         debug!("Configuring for node mode...");
         project_language = SupportedLanguage::Node;
         watch_patterns.push("*.js".to_string());
         watch_patterns.push("*.jsx".to_string());
-        exec_command = "npm start".to_string();
+        exec_commands.push("npm start".to_string());
       },
       ("python", Some(sub_matcher)) =>{
         error!("Argument configuration not yet supported!");
@@ -69,8 +70,8 @@ impl Cli {
         for s in split{
           watch_patterns.push(format!("*{}", s.to_string()));
         }
-        exec_command = format!("bash {}",sub_matcher.value_of("script").unwrap());
-        debug!("{:?}", exec_command);
+        exec_commands.push(format!("bash {}",sub_matcher.value_of("script").unwrap()).to_string());
+        debug!("{:?}", exec_commands);
       },
       _ => {
         error!("Argument configuration not yet supported!");
@@ -79,7 +80,7 @@ impl Cli {
 
     }
     
-    let ret = Cli { watch_patterns, project_language, exec_command };
+    let ret = Cli { watch_patterns, project_language, exec_commands };
     debug!("Parsed params = {:?}", ret);
 
     ret
