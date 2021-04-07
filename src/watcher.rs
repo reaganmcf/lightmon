@@ -2,8 +2,10 @@ extern crate notify;
 extern crate walkdir;
 
 use notify::{RecursiveMode, Watcher, watcher};
-use std::{sync::mpsc::{channel, Sender}, thread::{JoinHandle}};
+use std::{sync::mpsc::{channel, Sender}, thread::JoinHandle};
 use std::time::Duration;
+use std::ffi::OsStr;
+use std::path::Path;
 use walkdir::WalkDir;
 use std::collections::HashSet;
 
@@ -12,6 +14,7 @@ pub use crate::LightmonEvent;
 
 pub fn start(watch_patterns: Vec<String>, lightmon_event_sender: Sender<LightmonEvent>) -> JoinHandle<()> {
   let watch_thread = std::thread::spawn(move|| {
+
     let (tx, rx) = channel();
     let mut watcher = watcher(tx, Duration::from_secs(1)).unwrap();
 
@@ -21,7 +24,7 @@ pub fn start(watch_patterns: Vec<String>, lightmon_event_sender: Sender<Lightmon
     for pattern in watch_patterns {
       // *.xxx pattern
       if pattern.starts_with("*.") {
-        file_types_to_watch.insert(pattern[pattern.find(".").unwrap()..pattern.len()].to_string());
+        file_types_to_watch.insert(pattern[pattern.find(".").unwrap()+1..pattern.len()].to_string());
       } else {
         explicit_files_to_watch.insert(pattern.to_string());
       }
@@ -32,12 +35,15 @@ pub fn start(watch_patterns: Vec<String>, lightmon_event_sender: Sender<Lightmon
       // Check if the file is an explicit one we should watch
       should_watch = explicit_files_to_watch.contains(entry.path().to_str().unwrap());
       // Check if the file ends in a type we should watch
-      let f_name = entry.file_name().to_string_lossy();
-      should_watch = should_watch || f_name.ends_with(".rs");
-      
-      if should_watch {
-        debug!("Started watch on {:?}", entry.path().to_str().unwrap());
-        watcher.watch(entry.path().to_str().unwrap(),RecursiveMode::NonRecursive).unwrap();
+      let file_name = entry.file_name().to_str().unwrap();
+      let file_ext = Path::new(file_name).extension().and_then(OsStr::to_str);
+      if let Some(file_ext) = file_ext {
+        should_watch = should_watch || file_types_to_watch.contains(file_ext);
+        
+        if should_watch {
+          debug!("Started watch on {:?}", entry.path().to_str().unwrap());
+          watcher.watch(entry.path().to_str().unwrap(),RecursiveMode::NonRecursive).unwrap();
+        }
       }
     }
 
