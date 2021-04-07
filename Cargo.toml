@@ -1,6 +1,6 @@
 [package]
 name = "lightmon"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Reagan McFarland <me@reaganmcf.com>", "Alay Shah"]
 description = "A lightweight, cross-platform, language-agnostic 'run code on file change' tool, inspired by Nodemon"
 homepage = "https://github.com/reaganmcf/lightmon"
@@ -10,7 +10,8 @@ categories = ["command-line-utilities"]
 keywords = ["dev-tools", "nodemon", "productivity", "file-monitoring"]
 edition = "2018"
 exclude = [
-  ".github/*"
+  ".github/*",
+  "assets/*"
 ]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

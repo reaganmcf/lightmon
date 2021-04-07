@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img height="250px" src="https://github.com/reaganmcf/lightmon/blob/master/assets/logo.png"/>
+  <img height="250px" src="https://raw.githubusercontent.com/reaganmcf/lightmon/master/assets/logo.png"/>
 </p>
 
 # lightmon
