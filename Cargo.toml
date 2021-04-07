@@ -1,6 +1,6 @@
 [package]
 name = "lightmon"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Reagan McFarland <me@reaganmcf.com>", "Alay Shah"]
 description = "A lightweight, cross-platform, language-agnostic 'run code on file change' tool, inspired by Nodemon"
 homepage = "https://github.com/reaganmcf/lightmon"
