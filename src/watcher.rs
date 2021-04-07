@@ -2,8 +2,8 @@ extern crate notify;
 extern crate walkdir;
 
 use notify::{RecursiveMode, Watcher, watcher};
+use notify::poll::PollWatcher;
 use std::{sync::mpsc::{channel, Sender}, thread::JoinHandle};
-use std::time::Duration;
 use std::ffi::OsStr;
 use std::path::Path;
 use walkdir::WalkDir;
@@ -16,7 +16,7 @@ pub fn start(watch_patterns: Vec<String>, lightmon_event_sender: Sender<Lightmon
   let watch_thread = std::thread::spawn(move|| {
 
     let (tx, rx) = channel();
-    let mut watcher = watcher(tx, Duration::from_secs(1)).unwrap();
+    let mut watcher = PollWatcher::with_delay_ms(tx, 100).unwrap();
 
     let mut explicit_files_to_watch: HashSet<String> = HashSet::new();
     let mut file_types_to_watch: HashSet<String> = HashSet::new();

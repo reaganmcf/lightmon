@@ -25,6 +25,7 @@ fn main() {
   
   println!("lightmon started ({} mode)", cli_args.project_language);
 
+  // event thread
   loop {
     if let Ok(lightmon_event) = lightmon_event_receiver.recv() {
       match lightmon_event {
