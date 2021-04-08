@@ -9,6 +9,7 @@ mod exec;
 
 use cli::Cli;
 use std::sync::mpsc::channel;
+use std::sync::Arc;
 
 pub enum LightmonEvent {
   InitExec,
@@ -17,7 +18,7 @@ pub enum LightmonEvent {
 }
 
 fn main() {
-  let cli_args: Cli = Cli::new();
+  let cli_args = Arc::new(Cli::new());
   
   // get ligthmon event channel
   let (lightmon_event_sender, lightmon_event_receiver) = channel();
@@ -25,7 +26,7 @@ fn main() {
   // Send first dummy event
   lightmon_event_sender.send(LightmonEvent::InitExec);
   
-  watcher::start(cli_args.watch_patterns, lightmon_event_sender);
+  watcher::start(cli_args.clone(), lightmon_event_sender);
   
   println!("lightmon started ({} mode)", cli_args.project_language);
   
@@ -36,14 +37,14 @@ fn main() {
       match lightmon_event {
         LightmonEvent::KillAndRestartChild => {
           debug!("KILL AND RESTART RECEIEVED");
-          exec::start(cli_args.exec_commands.clone());
+          exec::start(cli_args.clone());
         },
         LightmonEvent::KillChild => {
           debug!("KILL RECEIEVED");
         },
         LightmonEvent::InitExec => {
           debug!("INIT EXEC RECEIVED");
-          exec::start(cli_args.exec_commands.clone());
+          exec::start(cli_args.clone());
         }
       }
     }

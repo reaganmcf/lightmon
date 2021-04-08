@@ -42,7 +42,7 @@ impl Cli {
     let mut exec_commands: Vec<String> = Vec::new();
     
     match matches.subcommand(){
-      ("rust", Some(sub_matcher)) =>{
+      ("rust", Some(_)) =>{
         debug!("Configuring for rust mode...");
         project_language = SupportedLanguage::Rust;
         watch_patterns.push("*.rs".to_string());
@@ -50,14 +50,14 @@ impl Cli {
         exec_commands.push("cargo build".to_string()); 
         exec_commands.push("cargo run".to_string());
       },
-      ("node", Some(sub_matcher)) =>{
+      ("node", Some(_)) =>{
         debug!("Configuring for node mode...");
         project_language = SupportedLanguage::Node;
         watch_patterns.push("*.js".to_string());
         watch_patterns.push("*.jsx".to_string());
         exec_commands.push("npm start".to_string());
       },
-      ("python", Some(sub_matcher)) =>{
+      ("python", Some(_)) =>{
         error!("Argument configuration not yet supported!");
         std::process::exit(1);
       },

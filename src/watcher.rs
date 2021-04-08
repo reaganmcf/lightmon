@@ -4,6 +4,7 @@ extern crate walkdir;
 use notify::{RecursiveMode, Watcher};
 use notify::poll::PollWatcher;
 use std::{sync::mpsc::{channel, Sender}, thread::JoinHandle};
+use std::sync::Arc;
 use std::ffi::OsStr;
 use std::path::Path;
 use walkdir::WalkDir;
@@ -12,7 +13,7 @@ use std::collections::HashSet;
 pub use crate::cli::Cli;
 pub use crate::LightmonEvent;
 
-pub fn start(watch_patterns: Vec<String>, lightmon_event_sender: Sender<LightmonEvent>) -> JoinHandle<()> {
+pub fn start(cli_args: Arc<Cli>, lightmon_event_sender: Sender<LightmonEvent>) -> JoinHandle<()> {
   let watch_thread = std::thread::spawn(move|| {
 
     let (tx, rx) = channel();
@@ -21,7 +22,7 @@ pub fn start(watch_patterns: Vec<String>, lightmon_event_sender: Sender<Lightmon
     let mut explicit_files_to_watch: HashSet<String> = HashSet::new();
     let mut file_types_to_watch: HashSet<String> = HashSet::new();
 
-    for pattern in watch_patterns {
+    for pattern in &cli_args.watch_patterns {
       // *.xxx pattern
       if pattern.starts_with("*.") {
         file_types_to_watch.insert(pattern[pattern.find(".").unwrap()+1..pattern.len()].to_string());
