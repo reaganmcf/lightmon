@@ -1,0 +1,135 @@
+name: CI
+on:
+  push:
+    branches: [master, staging, trying]
+  pull_request:
+    branches: [master]
+    types: [opened, reopened, synchronize]
+jobs:
+  ci:
+    name: CI
+    needs: [test, lint]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Done
+        run: exit 0
+  prepare:
+    name: Prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: fkirc/skip-duplicate-actions@master
+        with:
+          github_token: ${{ github.token }}
+  test:
+    name: Tests
+    needs: [prepare]
+    strategy:
+      fail-fast: false
+      matrix:
+        rust: [1.46.0, stable, beta]
+        os: [windows-latest, macos-latest, ubuntu-latest]
+        target:
+          - i686-pc-windows-msvc
+          - x86_64-pc-windows-msvc
+          - x86_64-unknown-linux-gnu
+          - i686-unknown-linux-gnu
+          - x86_64-apple-darwin
+        features:
+          - release
+        exclude:
+          - features: release
+            rust: stable
+          - features: release
+            rust: beta
+          - os: windows-latest
+            target: x86_64-apple-darwin
+          - os: windows-latest
+            target: x86_64-unknown-linux-gnu
+          - os: windows-latest
+            target: i686-unknown-linux-gnu
+          - os: macos-latest
+            target: i686-pc-windows-msvc
+          - os: macos-latest
+            target: x86_64-pc-windows-msvc
+          - os: macos-latest
+            target: x86_64-unknown-linux-gnu
+          - os: macos-latest
+            target: i686-unknown-linux-gnu
+          - os: ubuntu-latest
+            target: i686-pc-windows-msvc
+          - os: ubuntu-latest
+            target: x86_64-pc-windows-msvc
+          - os: ubuntu-latest
+            target: x86_64-apple-darwin
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ matrix.rust }}
+          target: ${{ matrix.target }}
+          override: true
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install linker
+        if: matrix.target == 'i686-unknown-linux-gnu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install gcc-multilib
+      - name: Test all features
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --target ${{ matrix.target }}
+      - name: Check debug statement
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: --target ${{ matrix.target }}
+      - name: Test release
+        uses: actions-rs/cargo@v1
+        if: matrix.features == 'release'
+        with:
+          command: test
+          args: --target ${{ matrix.target }}
+  nightly:
+    name: Nightly Tests
+    needs: [prepare]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Test all features
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+  lint:
+    name: Linting (fmt + clippy)
+    needs: [prepare]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Clippy for all features
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: -- -D warnings
+      - name: Format check
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: -- --check
