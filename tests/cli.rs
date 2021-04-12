@@ -3,22 +3,22 @@ extern crate predicates;
 
 use assert_cmd::prelude::*;
 //use predicates::prelude::*;
-use std::{process::Command};
+use std::process::Command;
 
 #[test]
-fn no_configuration_fails() -> Result<() , Box<dyn std::error::Error>> {
-  let mut cmd = Command::cargo_bin("lightmon")?;
-  cmd.assert().failure();
+fn no_configuration_fails() -> Result<(), Box<dyn std::error::Error>> {
+    let mut cmd = Command::cargo_bin("lightmon")?;
+    cmd.assert().failure();
 
-  Ok(())
+    Ok(())
 }
 
 #[test]
 fn unsupported_configuration_fails() -> Result<(), Box<dyn std::error::Error>> {
-  let mut cmd = Command::cargo_bin("lightmon")?;
-  cmd.arg("java").assert().failure();
+    let mut cmd = Command::cargo_bin("lightmon")?;
+    cmd.arg("java").assert().failure();
 
-  Ok(())
+    Ok(())
 }
 
 //TODO tests for valid configurations. The issue right now though is that

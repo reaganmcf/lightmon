@@ -8,9 +8,7 @@ A lightweight, cross-platform, language-agnostic "run code on file change" tool,
 <p align="left">
   <img src="https://img.shields.io/static/v1?label=status&message=In%20Development&color=critical"/>
   <img src="https://img.shields.io/crates/v/lightmon"/>
-  <img src="https://github.com/reaganmcf/lightmon/actions/workflows/ubuntu.yml/badge.svg"/>
-  <img src="https://github.com/reaganmcf/lightmon/actions/workflows/macos.yml/badge.svg"/>
-  <img src="https://github.com/reaganmcf/lightmon/actions/workflows/windows.yml/badge.svg"/>
+  <img src="https://github.com/reaganmcf/lightmon/actions/workflows/ci.yml/badge.svg"/>
   <img src="https://shields.io/github/license/reaganmcf/lightmon"/>
 </p>
 
