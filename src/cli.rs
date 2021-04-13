@@ -74,6 +74,7 @@ impl Cli {
                 debug!("{:?}", exec_commands);
             }
             _ => {
+                //automatic lang detection
                 error!("Argument configuration not yet supported!");
                 std::process::exit(1);
             }
