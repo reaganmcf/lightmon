@@ -1,6 +1,5 @@
 extern crate assert_cmd;
 extern crate predicates;
-use std::path::Path;
 
 use assert_cmd::prelude::*;
 //use predicates::prelude::*;
