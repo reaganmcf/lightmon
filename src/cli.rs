@@ -1,6 +1,7 @@
 use clap::{App, ArgMatches};
 use env_logger::Builder;
 use log::LevelFilter;
+use std::path::Path;
 
 #[derive(Debug)]
 pub enum SupportedLanguage {
@@ -44,7 +45,18 @@ impl Cli {
             ("shell", Some(sub_matcher)) => Some(Self::build_shell_config(sub_matcher)),
             _ => {
                 //automatic lang detection
-                None
+                // if Path::new("lightmon.toml").exists(){
+                //     //TODO
+                // } else if Path::new("nodemon.json").exists() {
+                //TODO
+                // }
+                if Path::new("package.json").exists() {
+                    Some(Self::build_node_config())
+                } else if Path::new("Cargo.toml").exists() {
+                    Some(Self::build_rust_config())
+                } else {
+                    None
+                }
             }
         };
 
@@ -74,7 +86,6 @@ impl Cli {
     }
     pub fn build_shell_config(sub_matcher: &ArgMatches) -> Self {
         let mut watch_patterns: Vec<String> = Vec::new();
-        let project_language: SupportedLanguage;
         let mut exec_commands: Vec<String> = Vec::new();
         debug!("Configuring for shell mode...");
         debug!("Script Path = {:?}", sub_matcher.value_of("script"));
