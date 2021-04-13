@@ -1,6 +1,7 @@
 use clap::{App, ArgMatches};
 use env_logger::Builder;
 use log::LevelFilter;
+use std::path::Path;
 
 #[derive(Debug)]
 pub enum SupportedLanguage {
@@ -37,55 +38,68 @@ impl Cli {
             Builder::new().filter_level(LevelFilter::Info).init();
         }
 
-        let mut watch_patterns: Vec<String> = Vec::new();
-        let project_language: SupportedLanguage;
-        let mut exec_commands: Vec<String> = Vec::new();
-
-        match matches.subcommand() {
-            ("rust", Some(_)) => {
-                debug!("Configuring for rust mode...");
-                project_language = SupportedLanguage::Rust;
-                watch_patterns.push("*.rs".to_string());
-                watch_patterns.push("Cargo.toml".to_string());
-                exec_commands.push("cargo build".to_string());
-                exec_commands.push("cargo run".to_string());
-            }
-            ("node", Some(_)) => {
-                debug!("Configuring for node mode...");
-                project_language = SupportedLanguage::Node;
-                watch_patterns.push("*.js".to_string());
-                watch_patterns.push("*.jsx".to_string());
-                exec_commands.push("npm start".to_string());
-            }
-            ("python", Some(_)) => {
-                error!("Argument configuration not yet supported!");
-                std::process::exit(1);
-            }
-            ("shell", Some(sub_matcher)) => {
-                debug!("Configuring for shell mode...");
-                project_language = SupportedLanguage::Shell;
-                debug!("Script Path = {:?}", sub_matcher.value_of("script"));
-                debug!("Watch Pattern = {:?}", sub_matcher.value_of("watch"));
-                let split = sub_matcher.value_of("watch").unwrap().split(',');
-                for s in split {
-                    watch_patterns.push(format!("*{}", s.to_string()));
-                }
-                exec_commands.push(format!("bash {}", sub_matcher.value_of("script").unwrap()));
-                debug!("{:?}", exec_commands);
-            }
+        let config: Option<Cli> = match matches.subcommand() {
+            ("rust", Some(_)) => Some(Self::build_rust_config()),
+            ("node", Some(_)) => Some(Self::build_node_config()),
+            ("python", Some(_)) => None,
+            ("shell", Some(sub_matcher)) => Some(Self::build_shell_config(sub_matcher)),
             _ => {
-                error!("Argument configuration not yet supported!");
-                std::process::exit(1);
+                //automatic lang detection
+                // if Path::new("lightmon.toml").exists(){
+                //     //TODO
+                // } else if Path::new("nodemon.json").exists() {
+                //TODO
+                // }
+                if Path::new("package.json").exists() {
+                    Some(Self::build_node_config())
+                } else if Path::new("Cargo.toml").exists() {
+                    Some(Self::build_rust_config())
+                } else {
+                    None
+                }
             }
-        }
-
-        let ret = Cli {
-            watch_patterns,
-            project_language,
-            exec_commands,
         };
-        debug!("Parsed params = {:?}", ret);
 
-        ret
+        if config.is_none() {
+            error!("Argument configuration not yet supported!");
+            std::process::exit(1);
+        }
+        config.unwrap()
+    }
+
+    pub fn build_node_config() -> Self {
+        debug!("Configuring for node mode...");
+        Cli {
+            watch_patterns: vec!["*.jsx".to_string(), ".js".to_string()],
+            project_language: SupportedLanguage::Node,
+            exec_commands: vec!["npm start".to_string()],
+        }
+    }
+
+    pub fn build_rust_config() -> Self {
+        debug!("Configuring for rust mode...");
+        Cli {
+            watch_patterns: vec!["*.rs".to_string(), "Cargo.toml".to_string()],
+            project_language: SupportedLanguage::Rust,
+            exec_commands: vec!["cargo build".to_string(), "cargo run".to_string()],
+        }
+    }
+    pub fn build_shell_config(sub_matcher: &ArgMatches) -> Self {
+        let mut watch_patterns: Vec<String> = Vec::new();
+        let mut exec_commands: Vec<String> = Vec::new();
+        debug!("Configuring for shell mode...");
+        debug!("Script Path = {:?}", sub_matcher.value_of("script"));
+        debug!("Watch Pattern = {:?}", sub_matcher.value_of("watch"));
+        let split = sub_matcher.value_of("watch").unwrap().split(',');
+        for s in split {
+            watch_patterns.push(format!("*{}", s.to_string()));
+        }
+        exec_commands.push(format!("bash {}", sub_matcher.value_of("script").unwrap()));
+        debug!("{:?}", exec_commands);
+        Cli {
+            watch_patterns,
+            project_language: SupportedLanguage::Shell,
+            exec_commands,
+        }
     }
 }
