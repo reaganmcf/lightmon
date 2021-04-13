@@ -90,6 +90,10 @@ impl Cli {
         debug!("Configuring for shell mode...");
         debug!("Script Path = {:?}", sub_matcher.value_of("script"));
         debug!("Watch Pattern = {:?}", sub_matcher.value_of("watch"));
+        if !Path::new(sub_matcher.value_of("script").unwrap()).exists() {
+            error!("Given path to script does not exist!");
+            std::process::exit(1);
+        }
         let split = sub_matcher.value_of("watch").unwrap().split(',');
         for s in split {
             watch_patterns.push(format!("*{}", s.to_string()));

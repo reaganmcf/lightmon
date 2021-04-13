@@ -1,21 +1,9 @@
 extern crate assert_cmd;
 extern crate predicates;
-use std::path::Path;
 
 use assert_cmd::prelude::*;
 //use predicates::prelude::*;
 use std::process::Command;
-
-#[test]
-fn no_configuration_fails() -> Result<(), Box<dyn std::error::Error>> {
-    let mut cmd = Command::cargo_bin("lightmon")?;
-    if Path::new("package.json").exists() || Path::new("Cargo.toml").exists() {
-        Ok(())
-    } else {
-        cmd.assert().failure();
-        Ok(())
-    }
-}
 
 #[test]
 fn unsupported_configuration_fails() -> Result<(), Box<dyn std::error::Error>> {
