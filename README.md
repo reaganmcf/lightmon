@@ -31,6 +31,16 @@ lightmon rust
 
 While there are not many languages supported currently, we plan to have an extensive list by our first official release.
 
+### For unsupported languages or complicated builds
+ `lightmon shell -s <path> -w <patterns>`
+
+ Here users can specify the path to the shell script and which file types to watch for seperated by commas.
+
+ For example, in a `python` project a user may want to watch `.py` and `.ipynb` files:
+
+ `lightmon shell -s run.sh -w .py,.ipynb`
+
+ Here `run.sh` would contain the shell command to execute the project.
 ## License
 `lightmon` uses the [GNU GPL v3.0](https://github.com/reaganmcf/lightmon/blob/master/LICENSE) License
 
