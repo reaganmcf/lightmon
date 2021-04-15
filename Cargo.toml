@@ -14,14 +14,15 @@ exclude = [
   "assets/*"
 ]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 notify = "4.0.12" 
 clap = {version = "~2.27.0", features = ["yaml"]}
-assert_cmd = "1.0.3"
-predicates = "1"
 walkdir = "2"
 log = "0.4.0"
 env_logger = "0.8.3"
 termcolor = "1.1.2"
+serde_json = "1.0"
+
+[dev-dependencies]
+assert_cmd = "1.0.3"
+serial_test = "0.5.1"
