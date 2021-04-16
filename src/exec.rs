@@ -1,5 +1,6 @@
 use std::io::{self, Write};
 use std::process::{Command, Stdio};
+use std::sync::mpsc::Sender;
 use std::sync::Arc;
 use std::thread;
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
@@ -7,7 +8,10 @@ use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 pub use crate::cli::Cli;
 pub use crate::LightmonEvent;
 
-pub fn start(cli_args: Arc<Cli>) -> std::thread::JoinHandle<()> {
+pub fn start(
+    cli_args: Arc<Cli>,
+    lightmon_event_sender: Sender<LightmonEvent>,
+) -> std::thread::JoinHandle<()> {
     thread::spawn(move || {
         debug!("thread started");
 
@@ -37,6 +41,23 @@ pub fn start(cli_args: Arc<Cli>) -> std::thread::JoinHandle<()> {
                 //reset terminal output color
                 let color_reset = WriteColor::reset(&mut error).unwrap();
                 debug!("reset color? {:?}", color_reset);
+            }
+            loop {
+                let mut input = String::new();
+                if let Ok(n) = io::stdin().read_line(&mut input) {
+                    if input.eq("rs\n") {
+                        debug!("rs RECEIEVED");
+                        match lightmon_event_sender.send(LightmonEvent::KillAndRestartChild) {
+                            Ok(()) => {}
+                            Err(_) => {
+                                panic!("failed to send initial lightmon event. Something went seriously wrong!");
+                            }
+                        };
+                    } else {
+                        debug!("unknown input, bits read from input {:?}", n);
+                        debug!("input = {:?}", input);
+                    }
+                }
             }
         }
     })
