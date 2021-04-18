@@ -1,1 +1,3 @@
 /target
+tests/example_projects/rust_basic_bin/target
+tests/example_projects/rust_basic_lib/target
