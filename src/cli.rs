@@ -80,8 +80,7 @@ impl Cli {
     /// If there is a `package.json` in the root directory, lightmon attempts to resolve the exec command
     /// in the following order:
     ///  1. The value at `scripts.start`
-    ///  2. The value at `scripts.run`
-    ///  3. `node main` where `main` is the value of the `main` key in `package.json` (the entry point of the project).
+    ///  2. `node main` where `main` is the value of the `main` key in `package.json` (the entry point of the project).
     ///
     /// **NOTE:** exec command will fallback to `node index.js` if all of the above fail.
     ///
@@ -108,10 +107,10 @@ impl Cli {
     pub fn build_node_config() -> Self {
         debug!("Configuring for node mode...");
         let watch_patterns: Vec<String> = vec![
-            ".jsx".to_string(),
-            ".js".to_string(),
-            ".html".to_string(),
-            ".css".to_string(),
+            "*.jsx".to_string(),
+            "*.js".to_string(),
+            "*.html".to_string(),
+            "*.css".to_string(),
         ];
         let mut exec_commands: Vec<String> = Vec::new();
 
@@ -128,13 +127,7 @@ impl Cli {
                             "scripts.start found! Resolving exec_commands as '{}'",
                             scripts_start
                         );
-                        exec_commands.push(scripts_start.to_string());
-                    } else if let Some(scripts_run) = scripts.get("run") {
-                        debug!(
-                            "scripts.run found! Resolvig exec_commands as '{}'",
-                            scripts_run
-                        );
-                        exec_commands.push(scripts_run.to_string());
+                        exec_commands.push(scripts_start.as_str().unwrap().to_string());
                     }
                 }
 
@@ -145,7 +138,8 @@ impl Cli {
                             "main found! Resolving exec_commands as '{}'",
                             main_entry_point
                         );
-                        exec_commands.push(format!("node {}", main_entry_point))
+                        // main_entry_point has a " on either end, so we need to trim
+                        exec_commands.push(format!("node {}", main_entry_point.as_str().unwrap()));
                     }
                 }
             }
@@ -164,14 +158,22 @@ impl Cli {
         }
     }
 
+    /// Build the `rust` configuration.
+    ///
+    /// ### Watch Patterns
+    /// [`Cargo.toml`, `.rs`]
+    ///
+    /// ### Exec Commands
+    /// `cargo run`
     pub fn build_rust_config() -> Self {
         debug!("Configuring for rust mode...");
         Cli {
             watch_patterns: vec!["*.rs".to_string(), "Cargo.toml".to_string()],
             project_language: SupportedLanguage::Rust,
-            exec_commands: vec!["cargo build".to_string(), "cargo run".to_string()],
+            exec_commands: vec!["cargo run".to_string()],
         }
     }
+
     pub fn build_shell_config(sub_matcher: &ArgMatches) -> Self {
         let mut watch_patterns: Vec<String> = Vec::new();
         let mut exec_commands: Vec<String> = Vec::new();
