@@ -9,11 +9,24 @@ args:
       help: Use verbose output
 subcommands:
   - rust:
-      about: Use rust preset for lightmon
+      about: Use rust preset for lightmon. `lightmon rust help` for more info
+      subcommands:
+        - build:
+            about: Use `cargo build` for exec command when file changes are detected
+        - test:
+            about: Use `cargo test` for exec command when file changes are detected
+        - doc:
+            about: Use `cargo doc` for exec command when file changes are detected
+        - clippy:
+            about: Use `cargo clippy` for exec command when file changes are detected
+        - bench:
+            about: Use `cargo bench` for exec command when file changes are detected
+        - check:
+            about: Use `cargo check` for exec command when file changes are detected
   - node:
-      about: Ues node preset for lightmon
+      about: Use node preset for lightmon. `lightmon node help` for more info
   - shell:
-      about: Use a custom shell script for unsupported languages
+      about: Use a custom shell script for unsupported languages. `lightmon shell help` for more info
       args:
         - script:
             short: s
