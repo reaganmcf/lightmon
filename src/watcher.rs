@@ -1,3 +1,6 @@
+//! Contains the thread that will start the file watcher and send LightmonEvents back to the main
+//! thread when they happen.
+
 extern crate notify;
 extern crate walkdir;
 
@@ -16,6 +19,9 @@ use walkdir::WalkDir;
 pub use crate::cli::Cli;
 pub use crate::LightmonEvent;
 
+/// Start a new watcher thread that will send LightmonEvents back to the main thread.
+///
+/// Returns a handle to the new thread
 pub fn start(cli_args: Arc<Cli>, lightmon_event_sender: Sender<LightmonEvent>) -> JoinHandle<()> {
     std::thread::spawn(move || {
         let (tx, rx) = channel();
