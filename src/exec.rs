@@ -1,3 +1,5 @@
+//! Contains the method for starting a thread that will run the exec commands in parallel.
+
 use std::io::{self};
 use std::process::Command;
 use std::sync::mpsc::Sender;
@@ -7,6 +9,9 @@ use std::thread;
 pub use crate::cli::Cli;
 pub use crate::LightmonEvent;
 
+/// Start an exec thread that will run the exec commands
+///
+/// Returns a handler to the thread
 pub fn start(
     cli_args: Arc<Cli>,
     lightmon_event_sender: Sender<LightmonEvent>,
