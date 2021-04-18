@@ -3,7 +3,6 @@ use std::process::{Command, Stdio};
 use std::sync::mpsc::Sender;
 use std::sync::Arc;
 use std::thread;
-use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
 pub use crate::cli::Cli;
 pub use crate::LightmonEvent;
@@ -24,31 +23,23 @@ pub fn start(
                 cmd.arg(argument);
             }
             debug!("final cmd = {:?}", cmd);
-            let output = cmd.output().unwrap();
-            cmd.stdout(Stdio::inherit());
-            cmd.stdout(Stdio::inherit());
-            //write stdout to stdout
-            io::stdout().write_all(&output.stdout).unwrap();
-            if !output.stderr.is_empty() {
-                //if stderr
-                //change color to red
-                let mut error = StandardStream::stderr(ColorChoice::Always);
-                error
-                    .set_color(ColorSpec::new().set_fg(Some(Color::Red)))
-                    .unwrap();
-                //write to stderr
-                io::stderr().write_all(&output.stderr).unwrap();
-                //reset terminal output color
-                let color_reset = WriteColor::reset(&mut error).unwrap();
-                debug!("reset color? {:?}", color_reset);
-            }
+            let mut child = cmd.spawn().unwrap();
             loop {
                 let mut input = String::new();
                 if let Ok(n) = io::stdin().read_line(&mut input) {
                     if input.eq("rs\n") {
                         debug!("rs RECEIEVED");
                         match lightmon_event_sender.send(LightmonEvent::KillAndRestartChild) {
-                            Ok(()) => {}
+                            Ok(()) => {
+                                let child_killed = child.kill();
+                                match child_killed {
+                                    Ok(()) => {}
+                                    Err(e) => {
+                                        error!("program cannot be quit and restarted: {:?}", e);
+                                        std::process::exit(1);
+                                    }
+                                }
+                            }
                             Err(_) => {
                                 panic!("failed to send initial lightmon event. Something went seriously wrong!");
                             }
