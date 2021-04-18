@@ -1,5 +1,5 @@
-use std::io::{self, Write};
-use std::process::{Command, Stdio};
+use std::io::{self};
+use std::process::Command;
 use std::sync::mpsc::Sender;
 use std::sync::Arc;
 use std::thread;
