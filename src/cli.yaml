@@ -12,15 +12,6 @@ subcommands:
       about: Use rust preset for lightmon
   - node:
       about: Ues node preset for lightmon
-  - python:
-      about: Use python preset for lightmon
-      args:
-        - entry:
-            short: e
-            long: entry_file
-            value_name: entry
-            help: Entry file to run on file changes
-            required: true
   - shell:
       about: Use a custom shell script for unsupported languages
       args:
