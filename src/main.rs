@@ -31,7 +31,7 @@ fn main() {
         }
     };
 
-    watcher::start(cli_args.clone(), lightmon_event_sender);
+    watcher::start(cli_args.clone(), lightmon_event_sender.clone());
 
     println!("lightmon started ({} mode)", cli_args.project_language);
 
@@ -41,14 +41,14 @@ fn main() {
             match lightmon_event {
                 LightmonEvent::KillAndRestartChild => {
                     debug!("KILL AND RESTART RECEIEVED");
-                    exec::start(cli_args.clone());
+                    exec::start(cli_args.clone(), lightmon_event_sender.clone());
                 }
                 LightmonEvent::KillChild => {
                     debug!("KILL RECEIEVED");
                 }
                 LightmonEvent::InitExec => {
                     debug!("INIT EXEC RECEIVED");
-                    exec::start(cli_args.clone());
+                    exec::start(cli_args.clone(), lightmon_event_sender.clone());
                 }
             }
         }
