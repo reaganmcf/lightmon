@@ -9,20 +9,11 @@ args:
       help: Use verbose output
 subcommands:
   - rust:
-      about: Use rust preset for lightmon
+      about: "Use rust preset for lightmon. Lightmon will detect the type of rust project you are working in automatically.\n Note: if you want to use a custom cargo command, you can provide the subcommand and any arguments and the exec command will get resolved accordingly."
   - node:
-      about: Ues node preset for lightmon
-  - python:
-      about: Use python preset for lightmon
-      args:
-        - entry:
-            short: e
-            long: entry_file
-            value_name: entry
-            help: Entry file to run on file changes
-            required: true
+      about: Use node preset for lightmon. `lightmon node help` for more info
   - shell:
-      about: Use a custom shell script for unsupported languages
+      about: Use a custom shell script for unsupported languages or complicated configurations. 
       args:
         - script:
             short: s

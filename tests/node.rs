@@ -36,6 +36,7 @@ fn node_basic_script_start_resolution() -> Result<(), Box<dyn std::error::Error>
         EP_NODE_BASIC_SCRIPT_START_PATH,
         Duration::from_secs(10),
         None,
+        None,
     )
     .unwrap();
     assert_eq!(output.stdout, BASIC_START_SCRIPT_RESOLUTION_EXPECTED);
@@ -50,6 +51,7 @@ fn node_basic_main_resolution() -> Result<(), Box<dyn std::error::Error>> {
         EP_NODE_BASIC_MAIN_ENTRY_POINT_PATH,
         Duration::from_secs(10),
         None,
+        None,
     )
     .unwrap();
     assert_eq!(output.stdout, BASIC_MAIN_RESOLUTION_EXPECTED);
@@ -60,7 +62,13 @@ fn node_basic_main_resolution() -> Result<(), Box<dyn std::error::Error>> {
 #[test]
 #[serial(node)]
 fn node_basic_fallback_resolution() -> Result<(), Box<dyn std::error::Error>> {
-    let output = run_example(EP_NODE_BASIC_FALLBACK_PATH, Duration::from_secs(10), None).unwrap();
+    let output = run_example(
+        EP_NODE_BASIC_FALLBACK_PATH,
+        Duration::from_secs(10),
+        None,
+        None,
+    )
+    .unwrap();
     assert_eq!(output.stdout, BASIC_FALLBACK_RESOLUTION_EXPECTED);
     Ok(())
 }

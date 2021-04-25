@@ -22,6 +22,7 @@ fn verbose_shows_debug_statements() -> Result<(), Box<dyn std::error::Error>> {
         EP_SHELL_BASIC_PATH,
         Duration::from_secs(5),
         Some(vec!["-v", "shell", "-s", "script.sh", "-w", ".sh"]),
+        None,
     )
     .unwrap();
     assert!(output.stderr.contains("DEBUG lightmon::cli]"));

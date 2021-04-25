@@ -28,7 +28,7 @@ Watch patterns are the file patterns that lightmon will watch for file changes, 
 
 ### Rust
 ```
-lightmon rust [cargo_subcommand]?
+lightmon rust [cargo_subcommand]? [cargo_subcommand_args]?
 ```
 
 ##### Watch Patterns
@@ -37,15 +37,15 @@ lightmon rust [cargo_subcommand]?
 ##### Exec Commands
 By default, the `rust` configuration will set the Exec command to `cargo run` if it's a binary project, and `cargo test` if it's a library.
 
-However, you can override this behavior by specifying the subcommand manually. For example, you want to do `cargo test` on a binary project instead of `cargo run` on file change events, you should do the following:
+However, you can override this behavior by specifying any valid cargo subcommand (and any arguments). For example, if you wanted to run `cargo build --bin my_bin --all-targets`, you can run the following:
 ```
-lightmon rust test
+lightmon rust build --bin my_bin --all-targets
 ```
 
 Refer to `lightmon help rust` for more information.
 
 ### Node.js
-**Note: This configuration also works for React, React-Native, TypeScript, etc. Anything with a package.json!**
+_Note: This configuration also works for React, React-Native, TypeScript, etc. i.e.: anything with a package.json!_
 
 ```
 lightmon node
