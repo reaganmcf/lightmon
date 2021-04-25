@@ -9,7 +9,7 @@ args:
       help: Use verbose output
 subcommands:
   - rust:
-      about: Use rust preset for lightmon. `lightmon rust help` for more info
+      about: "Use rust preset for lightmon. Lightmon will detect the type of rust project you are working in automatically."
       subcommands:
         - build:
             about: Use `cargo build` for exec command when file changes are detected

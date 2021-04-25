@@ -50,7 +50,7 @@ impl Cli {
         }
 
         let config: Option<Cli> = match matches.subcommand() {
-            ("rust", Some(_)) => Some(Self::build_rust_config()),
+            ("rust", Some(sub_matcher)) => Some(Self::build_rust_config(Some(sub_matcher))),
             ("node", Some(_)) => Some(Self::build_node_config()),
             ("python", Some(_)) => None,
             ("shell", Some(sub_matcher)) => Some(Self::build_shell_config(sub_matcher)),
@@ -64,7 +64,7 @@ impl Cli {
                 if Path::new("package.json").exists() {
                     Some(Self::build_node_config())
                 } else if Path::new("Cargo.toml").exists() {
-                    Some(Self::build_rust_config())
+                    Some(Self::build_rust_config(None))
                 } else {
                     None
                 }
@@ -171,13 +171,43 @@ impl Cli {
     /// [`Cargo.toml`, `.rs`]
     ///
     /// ### Exec Commands
-    /// `cargo run`
-    fn build_rust_config() -> Self {
+    /// If no subcommand is passed in, the exec command resolves with the following rules:
+    ///  1. `cargo run` if `src/main.rs` exists
+    ///  2. `cargo test` if `src/lib.rs` exists
+    ///
+    /// However, if a subcommand is passed in then the subcommand will be
+    /// used regardless.
+    ///
+    /// For example, the `lightmon rust doc` will resolve the exec command to `cargo doc`
+    fn build_rust_config(sub_matcher: Option<&ArgMatches>) -> Self {
+        let mut exec_commands: Vec<String> = Vec::new();
         debug!("Configuring for rust mode...");
+        // attempt to match subcommand
+        if let Some(sub_matcher) = sub_matcher {
+            let subcommand = sub_matcher.subcommand_name();
+            if let Some(subcommand_name) = subcommand {
+                debug!("Rust config received subcommand override");
+                exec_commands.push(format!("cargo {}", subcommand_name));
+            }
+        } else {
+            // Since no subcommand was given, resolve via project type
+            // 1. Check if src/main.rs exists
+            if Path::new("src/main.rs").exists() {
+                debug!("Cargo bin project detected");
+                exec_commands.push(format!("cargo {}", "run"));
+            } else if Path::new("src/lib.rs").exists() {
+                debug!("Cargo lib project detected");
+                exec_commands.push(format!("cargo {}", "test"));
+            } else {
+                error!("Could not find which type of rust project this is. Consider overriding using a cargo subcommand. Run `lightmon help rust` for more information.");
+                std::process::exit(1);
+            }
+        }
+
         Cli {
             watch_patterns: vec!["*.rs".to_string(), "Cargo.toml".to_string()],
             project_language: SupportedLanguage::Rust,
-            exec_commands: vec!["cargo run".to_string()],
+            exec_commands,
         }
     }
 
