@@ -57,6 +57,22 @@ fn rust_invalid_configuration_errors_out() -> Result<(), Box<dyn std::error::Err
 
 #[test]
 #[serial(rust)]
+fn rust_subcommand_override_with_args() -> Result<(), Box<dyn std::error::Error>> {
+    // Spawn child lightmon process at rust directory
+    let output = run_example(
+        EP_RUST_BASIC_BIN_PATH,
+        Duration::from_secs(5),
+        Some(vec!["rust", "build", "--bin", "foo"]),
+        None,
+    )
+    .unwrap();
+    assert!(output.stderr.contains("no bin target named `foo`"));
+
+    Ok(())
+}
+
+#[test]
+#[serial(rust)]
 fn rust_subcommand_override_in_bin_configuration() -> Result<(), Box<dyn std::error::Error>> {
     // Spawn child lightmon process at rust directory
     let output = run_example(

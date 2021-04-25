@@ -9,20 +9,7 @@ args:
       help: Use verbose output
 subcommands:
   - rust:
-      about: "Use rust preset for lightmon. Lightmon will detect the type of rust project you are working in automatically."
-      subcommands:
-        - build:
-            about: Use `cargo build` for exec command when file changes are detected
-        - test:
-            about: Use `cargo test` for exec command when file changes are detected
-        - doc:
-            about: Use `cargo doc` for exec command when file changes are detected
-        - clippy:
-            about: Use `cargo clippy` for exec command when file changes are detected
-        - bench:
-            about: Use `cargo bench` for exec command when file changes are detected
-        - check:
-            about: Use `cargo check` for exec command when file changes are detected
+      about: "Use rust preset for lightmon. Lightmon will detect the type of rust project you are working in automatically.\n Note: if you want to use a custom cargo command, you can provide the subcommand and any arguments and the exec command will get resolved accordingly."
   - node:
       about: Use node preset for lightmon. `lightmon node help` for more info
   - shell:

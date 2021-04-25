@@ -2,7 +2,7 @@
 //! watcher and exec threads.
 
 extern crate serde_json;
-use clap::{App, ArgMatches};
+use clap::{App, AppSettings, ArgMatches};
 use env_logger::Builder;
 use log::LevelFilter;
 use serde_json::Value;
@@ -41,7 +41,9 @@ impl Cli {
     /// project detection to determine which config to build.
     pub fn new() -> Self {
         let yaml = load_yaml!("cli.yaml");
-        let matches: ArgMatches = App::from_yaml(yaml).get_matches();
+        let matches: ArgMatches = App::from_yaml(yaml)
+            .global_setting(AppSettings::AllowExternalSubcommands)
+            .get_matches();
 
         if matches.is_present("verbose") {
             Builder::new().filter_level(LevelFilter::Debug).init();
@@ -175,19 +177,26 @@ impl Cli {
     ///  1. `cargo run` if `src/main.rs` exists
     ///  2. `cargo test` if `src/lib.rs` exists
     ///
-    /// However, if a subcommand is passed in then the subcommand will be
-    /// used regardless.
-    ///
-    /// For example, the `lightmon rust doc` will resolve the exec command to `cargo doc`
+    /// However, you can also specify any subcommand and custom arguments explicitly and they will
+    /// be carried over to the exec command. For example
+    /// ```
+    /// lightmon rust build --bin my_bin --all-targets
+    /// ```
+    /// Will resolve the exec command to `cargo build --bin my_bin --all-targets`
     fn build_rust_config(sub_matcher: Option<&ArgMatches>) -> Self {
         let mut exec_commands: Vec<String> = Vec::new();
         debug!("Configuring for rust mode...");
         // attempt to match subcommand
         if let Some(sub_matcher) = sub_matcher {
-            let subcommand = sub_matcher.subcommand_name();
-            if let Some(subcommand_name) = subcommand {
-                debug!("Rust config received subcommand override");
-                exec_commands.push(format!("cargo {}", subcommand_name));
+            debug!("build_rust_config received subcommand override!");
+            if let (external_name, Some(external_args)) = sub_matcher.subcommand() {
+                if external_args.values_of("").is_some() {
+                    let ext_args: Vec<&str> = external_args.values_of("").unwrap().collect();
+                    debug!("External commands = {:?}", ext_args);
+                    exec_commands.push(format!("cargo {} {}", external_name, ext_args.join(" ")));
+                } else {
+                    exec_commands.push(format!("cargo {}", external_name));
+                }
             }
         } else {
             // Since no subcommand was given, resolve via project type
