@@ -54,27 +54,37 @@ impl Cli {
         let config: Option<Cli> = match matches.subcommand() {
             ("rust", Some(sub_matcher)) => Some(Self::build_rust_config(Some(sub_matcher))),
             ("node", Some(_)) => Some(Self::build_node_config()),
-            ("python", Some(_)) => None,
             ("shell", Some(sub_matcher)) => Some(Self::build_shell_config(sub_matcher)),
             _ => {
+                // Note, since we are using AppSettings::AllowExternalSubcommands, we need to check
+                // again that a subcommand was passed in. This is because an unsupported lang would
+                // still match to this branch.
+                if matches.subcommand_name().is_some() {
+                    error!(
+                        "{} is not supported. Consider using `lightmon shell` instead.",
+                        matches.subcommand_name().unwrap()
+                    );
+                    None
+                }
                 //automatic lang detection
-                // if Path::new("lightmon.toml").exists(){
-                //     //TODO
-                // } else if Path::new("nodemon.json").exists() {
-                //TODO
-                // }
-                if Path::new("package.json").exists() {
+                else if Path::new("lightmon.toml").exists() {
+                    //TODO
+                    None
+                } else if Path::new("nodemon.json").exists() {
+                    //TODO
+                    None
+                } else if Path::new("package.json").exists() {
                     Some(Self::build_node_config())
                 } else if Path::new("Cargo.toml").exists() {
                     Some(Self::build_rust_config(None))
                 } else {
+                    error!("Unable to resolve configuration automatically. Consider using `lightmon shell` instead.");
                     None
                 }
             }
         };
 
         if config.is_none() {
-            error!("Argument configuration not yet supported!");
             std::process::exit(1);
         }
         config.unwrap()

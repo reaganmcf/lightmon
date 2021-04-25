@@ -13,7 +13,7 @@ subcommands:
   - node:
       about: Use node preset for lightmon. `lightmon node help` for more info
   - shell:
-      about: Use a custom shell script for unsupported languages. `lightmon shell help` for more info
+      about: Use a custom shell script for unsupported languages or complicated configurations. 
       args:
         - script:
             short: s
