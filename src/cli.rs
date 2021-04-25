@@ -65,14 +65,14 @@ impl Cli {
                         matches.subcommand_name().unwrap()
                     );
                     None
-                }
+
                 //automatic lang detection
-                else if Path::new("lightmon.toml").exists() {
-                    //TODO
-                    None
-                } else if Path::new("nodemon.json").exists() {
-                    //TODO
-                    None
+                //else if Path::new("lightmon.toml").exists() {
+                //    //TODO
+                //    None
+                //} else if Path::new("nodemon.json").exists() {
+                //    //TODO
+                //    None
                 } else if Path::new("package.json").exists() {
                     Some(Self::build_node_config())
                 } else if Path::new("Cargo.toml").exists() {
