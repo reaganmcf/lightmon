@@ -23,7 +23,7 @@ Hello, World!
 #[serial(rust)]
 fn rust_basic_bin_configuration() -> Result<(), Box<dyn std::error::Error>> {
     // Spawn child lightmon process at rust directory
-    let output = run_example(EP_RUST_BASIC_BIN_PATH, Duration::from_secs(5), None).unwrap();
+    let output = run_example(EP_RUST_BASIC_BIN_PATH, Duration::from_secs(5), None, None).unwrap();
     assert_eq!(output.stdout, BASIC_BIN_CONFIGURATION_EXPECTED);
     Ok(())
 }
@@ -32,7 +32,7 @@ fn rust_basic_bin_configuration() -> Result<(), Box<dyn std::error::Error>> {
 #[serial(rust)]
 fn rust_basic_lib_configuration() -> Result<(), Box<dyn std::error::Error>> {
     // Spawn child lightmon process at rust directory
-    let output = run_example(EP_RUST_BASIC_LIB_PATH, Duration::from_secs(5), None).unwrap();
+    let output = run_example(EP_RUST_BASIC_LIB_PATH, Duration::from_secs(5), None, None).unwrap();
     assert!(output.stdout.contains("tests::it_works"));
     Ok(())
 }
@@ -41,7 +41,13 @@ fn rust_basic_lib_configuration() -> Result<(), Box<dyn std::error::Error>> {
 #[serial(rust)]
 fn rust_invalid_configuration_errors_out() -> Result<(), Box<dyn std::error::Error>> {
     // Spawn child lightmon process at rust directory
-    let output = run_example(EP_RUST_INVALID_PATH, Duration::from_secs(5), None).unwrap();
+    let output = run_example(
+        EP_RUST_INVALID_PATH,
+        Duration::from_secs(5),
+        None,
+        Some(true),
+    )
+    .unwrap();
     assert!(output
         .stderr
         .contains("ERROR lightmon::cli] Could not find which type of rust project this is."));
@@ -57,9 +63,10 @@ fn rust_subcommand_override_in_bin_configuration() -> Result<(), Box<dyn std::er
         EP_RUST_BASIC_BIN_PATH,
         Duration::from_secs(5),
         Some(vec!["rust", "doc"]),
+        None,
     )
     .unwrap();
-    assert!(output.stderr.contains("Documenting rust_bin"));
+    assert!(!output.stdout.contains("Hello, World!"));
     Ok(())
 }
 

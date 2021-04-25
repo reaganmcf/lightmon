@@ -45,6 +45,7 @@ fn shell_basic_configuration() -> Result<(), Box<dyn std::error::Error>> {
         EP_SHELL_BASIC_PATH,
         Duration::from_secs(5),
         Some(vec!["shell", "-s", "script.sh", "-w", ".sh"]),
+        None,
     )
     .unwrap();
     assert_eq!(output.stdout, BASIC_CONFIGURATION_EXPECTED);
@@ -59,6 +60,7 @@ fn shell_should_error_with_no_script_path() -> Result<(), Box<dyn std::error::Er
         EP_SHELL_BASIC_PATH,
         Duration::from_secs(5),
         Some(vec!["shell", "-w", ".sh"]),
+        None,
     )
     .unwrap();
     assert_eq!(output.stderr, NO_SCRIPT_PATH_EXPECTED);
@@ -73,6 +75,7 @@ fn shell_should_error_with_no_watch_patterns() -> Result<(), Box<dyn std::error:
         EP_SHELL_BASIC_PATH,
         Duration::from_secs(5),
         Some(vec!["shell", "-s", "script.sh"]),
+        Some(true),
     )
     .unwrap();
     assert_eq!(output.stderr, NO_WATCH_PATTERNS_EXPECTED);

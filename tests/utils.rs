@@ -21,6 +21,7 @@ pub fn run_example(
     project_path: &str,
     sleep_time: Duration,
     arg_list: Option<Vec<&str>>,
+    is_going_to_fail: Option<bool>,
 ) -> Result<CommandOutput, Box<dyn std::error::Error>> {
     // Spawn child lightmon process at node directory
     let mut cmd = Command::cargo_bin("lightmon").ok().unwrap();
@@ -39,10 +40,12 @@ pub fn run_example(
     std::thread::sleep(sleep_time);
 
     // Kill it
-    assert!(
-        child.kill().is_ok(),
-        "child process should be able to be killed"
-    );
+    if let None = is_going_to_fail {
+        assert!(
+            child.kill().is_ok(),
+            "child process should be able to be killed"
+        );
+    }
 
     // read stdout and stderr into strings
     let mut stdout = String::new();
