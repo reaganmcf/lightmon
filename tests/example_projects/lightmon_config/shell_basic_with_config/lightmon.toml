@@ -1,0 +1,7 @@
+[settings]
+verbose = true
+language = shell
+
+[args]
+script-path = ./script.sh
+watch-patterns = .c
