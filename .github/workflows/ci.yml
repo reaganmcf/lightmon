@@ -34,6 +34,7 @@ jobs:
           - x86_64-unknown-linux-gnu
           - i686-unknown-linux-gnu
           - x86_64-apple-darwin
+          - aarch-apple-darwin
         features:
           - release
         exclude:
@@ -47,6 +48,8 @@ jobs:
             target: x86_64-unknown-linux-gnu
           - os: windows-latest
             target: i686-unknown-linux-gnu
+          - os: windows-latest
+            target: aarch-apple-darwin
           - os: macos-latest
             target: i686-pc-windows-msvc
           - os: macos-latest
@@ -61,6 +64,8 @@ jobs:
             target: x86_64-pc-windows-msvc
           - os: ubuntu-latest
             target: x86_64-apple-darwin
+          - os: ubuntu-latest
+            target: aarch-apple-darwin
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install rust
