@@ -15,8 +15,8 @@ MAGENTA="$(tput setaf 5 2>/dev/null || printf '')"
 NO_COLOR="$(tput sgr0 2>/dev/null || printf '')"
 
 SUPPORTED_TARGETS="x86_64-unknown-linux-gnu i686-unknown-linux-musl \
-		   x86_64-apple-darwin x86_64-pc-windows-msvc \
-		   i686-pc-wndows-msvc"
+		   aarch64-apple-darwin x86_64-apple-darwin \
+		   x86_64-pc-windows-msvc i686-pc-wndows-msvc"
 
 info() {
   printf '%s\n' "${BOLD}${GREY}>${NO_COLOR} $*"
@@ -111,11 +111,14 @@ detect_arch() {
 
 	case "${arch}" in
 		amd64) arch="x86_64" ;;
+		arm64) arch="aarch64" ;;
 	esac
 
 	# `uname -m` in some cases mis-reports 32bit OS as 64bit, so double check
 	if [ "${arch}" = "x86_64" ] && [ "$(getconf LONG_BIT)" -eq 32 ]; then
 		arch=i686
+	elif [ "${arch}" = "aarch64" ] && [ "$(getconf LONG_BIT)" -eq 32 ]; then
+		arch=arm
 	fi
 
 	printf '%s' "${arch}"
@@ -263,7 +266,7 @@ is_build_available() {
 	)
 
 	if [ "${good}" != "1" ]; then
-		error "${arch} builds for ${platform} are not yet availble for Lightmon"
+		error "${arch} builds for ${platform} are not yet available for Lightmon"
 		printf "\n" >&2
 		info "If you would like to see a build for your configuration,"
 		info "please create an issue requesting a build for ${MAGENTA}${target}$-${NO_COLOR}:"
