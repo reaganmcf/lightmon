@@ -137,12 +137,12 @@ install() {
 
   if test_writeable "${BIN_DIR}"; then
     sudo=""
-    msg="Installing Starship, please wait…"
+    msg="Installing Lightmon, please wait…"
   else
     warn "Escalated permissions are required to install to ${BIN_DIR}"
     elevate_priv
     sudo="sudo"
-    msg="Installing Starship as root, please wait…"
+    msg="Installing Lightmon as root, please wait…"
   fi
   info "$msg"
 
