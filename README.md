@@ -91,6 +91,20 @@ It's very tricky to infer what the patterns and exec commands could be, so we re
   lightmon shell -s run.sh -w .py,.ipynb
   ```
 
+## Installation
+There are many ways to install `lightmon`. We recommend using our install script as it is the fastest method.
+
+```bash
+$ curl -sSL https://raw.githubusercontent.com/reaganmcf/lightmon/master/install.sh | sh
+```
+
+But, we also support other popular package managers if you would rather use them instead:
+
+##### `cargo`
+```bash
+$ cargo install lightmon
+```
+
 ## License
 `lightmon` uses the [GNU GPL v3.0](https://github.com/reaganmcf/lightmon/blob/master/LICENSE) License
 
