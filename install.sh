@@ -266,7 +266,7 @@ is_build_available() {
 	)
 
 	if [ "${good}" != "1" ]; then
-		error "${arch} builds for ${platform} are not yet availble for Lightmon"
+		error "${arch} builds for ${platform} are not yet available for Lightmon"
 		printf "\n" >&2
 		info "If you would like to see a build for your configuration,"
 		info "please create an issue requesting a build for ${MAGENTA}${target}$-${NO_COLOR}:"
