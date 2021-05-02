@@ -2,7 +2,7 @@ name: Deploy
 on:
   push:
     tags:
-      - "*"
+      - "v*"
 
 jobs:
   # Build sources for every OS
@@ -111,6 +111,5 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: lightmon-*/lightmon-*
-          body_path: RELEASE.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
