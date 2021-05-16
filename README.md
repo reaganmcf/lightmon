@@ -105,6 +105,11 @@ But, we also support other popular package managers if you would rather use them
 $ cargo install lightmon
 ```
 
+##### Arch AUR
+```bash
+$ yay -S lightmon
+```
+
 ## License
 `lightmon` uses the [GNU GPL v3.0](https://github.com/reaganmcf/lightmon/blob/master/LICENSE) License
 
