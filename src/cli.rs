@@ -1,7 +1,3 @@
-//! Responsible for parsing command line arguments and returning information needed by the
-//! watcher and exec threads.
-
-extern crate serde_json;
 use clap::{App, AppSettings, ArgMatches};
 use env_logger::Builder;
 use log::LevelFilter;
@@ -10,9 +6,9 @@ use std::fs::File;
 use std::io::BufReader;
 use std::path::Path;
 
-/// Enum definitions of all supported languages
+// Enum definitions of all supported languages
 #[derive(Debug)]
-pub enum SupportedLanguage {
+pub(crate) enum SupportedLanguage {
     Rust,
     Node,
     Shell,
@@ -28,18 +24,18 @@ impl std::fmt::Display for SupportedLanguage {
     }
 }
 
-/// Struct that contains all parsed data necessary for `exec` and `watcher`
+// Struct that contains all parsed data necessary for `exec` and `watcher`
 #[derive(Debug)]
-pub struct Cli {
+pub(crate) struct Cli {
     pub watch_patterns: Vec<String>, // file patterns to watch
     pub project_language: SupportedLanguage,
     pub exec_commands: Vec<String>, // list of commands to run
 }
 
 impl Cli {
-    /// Entry point for generating a new Cli struct. Uses clap, as well as automatic language
-    /// project detection to determine which config to build.
-    pub fn new() -> Self {
+    // Entry point for generating a new Cli struct. Uses clap, as well as automatic language
+    // project detection to determine which config to build.
+    pub(crate) fn new() -> Self {
         let yaml = load_yaml!("cli.yaml");
         let matches: ArgMatches = App::from_yaml(yaml)
             .global_setting(AppSettings::AllowExternalSubcommands)
@@ -90,39 +86,16 @@ impl Cli {
         config.unwrap()
     }
 
-    /// Build the `nodejs` configuration.
-    ///
-    /// ### Watch Patterns
-    /// [`.jsx`, `.js`, `.html`, `.css`]
-    ///
-    /// ### Exec Commands
-    /// If there is a `package.json` in the root directory, lightmon attempts to resolve the exec command
-    /// in the following order:
-    ///  1. The value at `scripts.start`
-    ///  2. `node main` where `main` is the value of the `main` key in `package.json` (the entry point of the project).
-    ///
-    /// **NOTE:** exec command will fallback to `node index.js` if all of the above fail.
-    ///
-    /// For example, the following `package.json` will result in the exec command resolving to
-    /// `react-scripts start`:
-    /// ```json
-    /// {
-    ///     "name": "calculator",
-    ///     "main": "index.js",
-    ///     "scripts": {
-    ///         "start": "react-scripts start"
-    ///         "build": "react-scripts build"
-    ///     }
-    /// }
-    /// ```
-    ///
-    /// In this example, the exec command will resolve to `node my_entry_point.js`:
-    /// ```json
-    /// {
-    ///     "name": "bar",
-    ///     "main": "my_entry_point.js"
-    /// }
-    /// ```
+    // Build the `nodejs` configuration.
+    //
+    // ### Watch Patterns
+    // [`.jsx`, `.js`, `.html`, `.css`]
+    //
+    // ### Exec Commands
+    // If there is a `package.json` in the root directory, lightmon attempts to resolve the exec command
+    // in the following order:
+    //  1. The value at `scripts.start`
+    //  2. `node main` where `main` is the value of the `main` key in `package.json` (the entry point of the project).
     fn build_node_config() -> Self {
         debug!("Configuring for node mode...");
         let watch_patterns: Vec<String> = vec![
@@ -177,22 +150,22 @@ impl Cli {
         }
     }
 
-    /// Build the `rust` configuration.
-    ///
-    /// ### Watch Patterns
-    /// [`Cargo.toml`, `.rs`]
-    ///
-    /// ### Exec Commands
-    /// If no subcommand is passed in, the exec command resolves with the following rules:
-    ///  1. `cargo run` if `src/main.rs` exists
-    ///  2. `cargo test` if `src/lib.rs` exists
-    ///
-    /// However, you can also specify any subcommand and custom arguments explicitly and they will
-    /// be carried over to the exec command. For example
-    /// ```
-    /// lightmon rust build --bin my_bin --all-targets
-    /// ```
-    /// Will resolve the exec command to `cargo build --bin my_bin --all-targets`
+    // Build the `rust` configuration.
+    //
+    // ### Watch Patterns
+    // [`Cargo.toml`, `.rs`]
+    //
+    // ### Exec Commands
+    // If no subcommand is passed in, the exec command resolves with the following rules:
+    //  1. `cargo run` if `src/main.rs` exists
+    //  2. `cargo test` if `src/lib.rs` exists
+    //
+    // However, you can also specify any subcommand and custom arguments explicitly and they will
+    // be carried over to the exec command. For example
+    // ```
+    // lightmon rust build --bin my_bin --all-targets
+    // ```
+    // Will resolve the exec command to `cargo build --bin my_bin --all-targets`
     fn build_rust_config(sub_matcher: Option<&ArgMatches>) -> Self {
         let mut exec_commands: Vec<String> = Vec::new();
         debug!("Configuring for rust mode...");
@@ -230,8 +203,8 @@ impl Cli {
         }
     }
 
-    /// Build the `shell` configuration.
-    /// The watch patterns and exec commands are determined by the arguments passed in.
+    // Build the `shell` configuration.
+    // The watch patterns and exec commands are determined by the arguments passed in.
     fn build_shell_config(sub_matcher: &ArgMatches) -> Self {
         let mut watch_patterns: Vec<String> = Vec::new();
         let mut exec_commands: Vec<String> = Vec::new();
