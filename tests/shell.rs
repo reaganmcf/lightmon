@@ -1,8 +1,7 @@
-mod utils;
-
 #[macro_use]
 extern crate serial_test;
-extern crate assert_cmd;
+
+mod utils;
 use std::time::Duration;
 use utils::*;
 
@@ -40,7 +39,7 @@ Hello, World!
 #[cfg(not(target_os = "windows"))]
 #[test]
 #[serial(shell)]
-fn shell_basic_configuration() -> Result<(), Box<dyn std::error::Error>> {
+fn shell_basic_configuration() -> TestResult {
     let output = run_example(
         EP_SHELL_BASIC_PATH,
         Duration::from_secs(5),
@@ -55,7 +54,7 @@ fn shell_basic_configuration() -> Result<(), Box<dyn std::error::Error>> {
 #[cfg(not(target_os = "windows"))]
 #[test]
 #[serial(shell)]
-fn shell_should_error_with_no_script_path() -> Result<(), Box<dyn std::error::Error>> {
+fn shell_should_error_with_no_script_path() -> TestResult {
     let output = run_example(
         EP_SHELL_BASIC_PATH,
         Duration::from_secs(5),
@@ -70,7 +69,7 @@ fn shell_should_error_with_no_script_path() -> Result<(), Box<dyn std::error::Er
 #[cfg(not(target_os = "windows"))]
 #[test]
 #[serial(shell)]
-fn shell_should_error_with_no_watch_patterns() -> Result<(), Box<dyn std::error::Error>> {
+fn shell_should_error_with_no_watch_patterns() -> TestResult {
     let output = run_example(
         EP_SHELL_BASIC_PATH,
         Duration::from_secs(5),
@@ -85,7 +84,7 @@ fn shell_should_error_with_no_watch_patterns() -> Result<(), Box<dyn std::error:
 #[cfg(not(target_os = "windows"))]
 #[test]
 #[serial(shell)]
-fn shell_basic_with_file_changes() -> Result<(), Box<dyn std::error::Error>> {
+fn shell_basic_with_file_changes() -> TestResult {
     let output = run_example_with_file_change(
         EP_SHELL_BASIC_PATH,
         Duration::from_secs(5),

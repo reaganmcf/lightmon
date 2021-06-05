@@ -1,9 +1,3 @@
-//! Contains the thread that will start the file watcher and send LightmonEvents back to the main
-//! thread when they happen.
-
-extern crate notify;
-extern crate walkdir;
-
 use notify::poll::PollWatcher;
 use notify::{RecursiveMode, Watcher};
 use std::collections::HashSet;
@@ -16,13 +10,15 @@ use std::{
 };
 use walkdir::WalkDir;
 
-pub use crate::cli::Cli;
-pub use crate::LightmonEvent;
+use crate::cli::Cli;
+use crate::LightmonEvent;
 
-/// Start a new watcher thread that will send LightmonEvents back to the main thread.
-///
-/// Returns a handle to the new thread
-pub fn start(cli_args: Arc<Cli>, lightmon_event_sender: Sender<LightmonEvent>) -> JoinHandle<()> {
+// Start a new watcher thread that will send LightmonEvents back to the main thread.
+// Returns a handle to the new thread
+pub(crate) fn start(
+    cli_args: Arc<Cli>,
+    lightmon_event_sender: Sender<LightmonEvent>,
+) -> JoinHandle<()> {
     std::thread::spawn(move || {
         let (tx, rx) = channel();
         let mut watcher = PollWatcher::with_delay_ms(tx, 100).unwrap();
@@ -78,7 +74,7 @@ pub fn start(cli_args: Arc<Cli>, lightmon_event_sender: Sender<LightmonEvent>) -
                     }
                 }
                 Err(e) => {
-                    error!("Failed to receieve event from channel {:?}", e);
+                    error!("Failed to receive event from channel {:?}", e);
                 }
             }
         }

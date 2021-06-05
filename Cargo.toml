@@ -1,10 +1,9 @@
 [package]
 name = "lightmon"
-version = "0.2.0-alpha.0"
+version = "0.2.0-alpha.2"
 authors = ["Reagan McFarland <me@reaganmcf.com>", "Alay Shah"]
 description = "A lightweight, cross-platform, language-agnostic 'run code on file change' tool, inspired by Nodemon"
 homepage = "https://github.com/reaganmcf/lightmon"
-documentation = "https://docs.rs/lightmon"
 license = "GPL-3.0"
 categories = ["command-line-utilities"]
 keywords = ["dev-tools", "nodemon", "productivity", "file-monitoring"]

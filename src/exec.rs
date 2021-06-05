@@ -1,21 +1,18 @@
-//! Contains the method for starting a thread that will run the exec commands in parallel.
+// Contains the method for starting a thread that will run the exec commands in parallel.
 
 use std::process::Command;
 use std::sync::mpsc::Sender;
 use std::sync::Arc;
 use std::thread;
-use std::{
-    io::{self},
-    process::Child,
-};
+use std::{io, process::Child};
 
-pub use crate::cli::Cli;
-pub use crate::LightmonEvent;
+use crate::cli::Cli;
+use crate::LightmonEvent;
 
-/// Start an exec thread that will run the exec commands
-///
-/// Returns a handler to the thread
-pub fn start(
+// Start an exec thread that will run the exec commands
+//
+// Returns a handler to the thread
+pub(crate) fn start(
     cli_args: Arc<Cli>,
     lightmon_event_sender: Sender<LightmonEvent>,
     exec_child_process_sender: Sender<Child>,

@@ -21,7 +21,7 @@ Hello, World!
 
 #[test]
 #[serial(rust)]
-fn rust_basic_bin_configuration() -> Result<(), Box<dyn std::error::Error>> {
+fn rust_basic_bin_configuration() -> TestResult {
     // Spawn child lightmon process at rust directory
     let output = run_example(EP_RUST_BASIC_BIN_PATH, Duration::from_secs(5), None, None).unwrap();
     assert_eq!(output.stdout, BASIC_BIN_CONFIGURATION_EXPECTED);
@@ -30,7 +30,7 @@ fn rust_basic_bin_configuration() -> Result<(), Box<dyn std::error::Error>> {
 
 #[test]
 #[serial(rust)]
-fn rust_basic_lib_configuration() -> Result<(), Box<dyn std::error::Error>> {
+fn rust_basic_lib_configuration() -> TestResult {
     // Spawn child lightmon process at rust directory
     let output = run_example(EP_RUST_BASIC_LIB_PATH, Duration::from_secs(5), None, None).unwrap();
     assert!(output.stdout.contains("tests::it_works"));
@@ -39,7 +39,7 @@ fn rust_basic_lib_configuration() -> Result<(), Box<dyn std::error::Error>> {
 
 #[test]
 #[serial(rust)]
-fn rust_invalid_configuration_errors_out() -> Result<(), Box<dyn std::error::Error>> {
+fn rust_invalid_configuration_errors_out() -> TestResult {
     // Spawn child lightmon process at rust directory
     let output = run_example(
         EP_RUST_INVALID_PATH,
@@ -57,7 +57,7 @@ fn rust_invalid_configuration_errors_out() -> Result<(), Box<dyn std::error::Err
 
 #[test]
 #[serial(rust)]
-fn rust_subcommand_override_with_args() -> Result<(), Box<dyn std::error::Error>> {
+fn rust_subcommand_override_with_args() -> TestResult {
     // Spawn child lightmon process at rust directory
     let output = run_example(
         EP_RUST_BASIC_BIN_PATH,
@@ -73,7 +73,7 @@ fn rust_subcommand_override_with_args() -> Result<(), Box<dyn std::error::Error>
 
 #[test]
 #[serial(rust)]
-fn rust_subcommand_override_in_bin_configuration() -> Result<(), Box<dyn std::error::Error>> {
+fn rust_subcommand_override_in_bin_configuration() -> TestResult {
     // Spawn child lightmon process at rust directory
     let output = run_example(
         EP_RUST_BASIC_BIN_PATH,
@@ -88,7 +88,7 @@ fn rust_subcommand_override_in_bin_configuration() -> Result<(), Box<dyn std::er
 
 #[test]
 #[serial(rust)]
-fn rust_basic_bin_test_with_rs_file_edits() -> Result<(), Box<dyn std::error::Error>> {
+fn rust_basic_bin_test_with_rs_file_edits() -> TestResult {
     let output = run_example_with_file_change(
         EP_RUST_BASIC_BIN_PATH,
         Duration::from_secs(10),

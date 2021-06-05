@@ -1,7 +1,7 @@
-mod utils;
-
 #[macro_use]
 extern crate serial_test;
+
+mod utils;
 use std::time::Duration;
 use utils::*;
 
@@ -31,7 +31,7 @@ called by script.start
 // node configuration where script.start is in package.json
 #[test]
 #[serial(node)]
-fn node_basic_script_start_resolution() -> Result<(), Box<dyn std::error::Error>> {
+fn node_basic_script_start_resolution() -> TestResult {
     let output = run_example(
         EP_NODE_BASIC_SCRIPT_START_PATH,
         Duration::from_secs(10),
@@ -46,7 +46,7 @@ fn node_basic_script_start_resolution() -> Result<(), Box<dyn std::error::Error>
 // node configuration where main is in package.json
 #[test]
 #[serial(node)]
-fn node_basic_main_resolution() -> Result<(), Box<dyn std::error::Error>> {
+fn node_basic_main_resolution() -> TestResult {
     let output = run_example(
         EP_NODE_BASIC_MAIN_ENTRY_POINT_PATH,
         Duration::from_secs(10),
@@ -61,7 +61,7 @@ fn node_basic_main_resolution() -> Result<(), Box<dyn std::error::Error>> {
 // node configuration where nothing can be resolved
 #[test]
 #[serial(node)]
-fn node_basic_fallback_resolution() -> Result<(), Box<dyn std::error::Error>> {
+fn node_basic_fallback_resolution() -> TestResult {
     let output = run_example(
         EP_NODE_BASIC_FALLBACK_PATH,
         Duration::from_secs(10),
@@ -75,7 +75,7 @@ fn node_basic_fallback_resolution() -> Result<(), Box<dyn std::error::Error>> {
 
 #[test]
 #[serial(node)]
-fn node_test_with_js_file_edits() -> Result<(), Box<dyn std::error::Error>> {
+fn node_test_with_js_file_edits() -> TestResult {
     let output = run_example_with_file_change(
         EP_NODE_BASIC_SCRIPT_START_PATH,
         Duration::from_secs(10),
@@ -89,7 +89,7 @@ fn node_test_with_js_file_edits() -> Result<(), Box<dyn std::error::Error>> {
 
 #[test]
 #[serial(node)]
-fn node_test_with_jsx_file_edits() -> Result<(), Box<dyn std::error::Error>> {
+fn node_test_with_jsx_file_edits() -> TestResult {
     let output = run_example_with_file_change(
         EP_NODE_BASIC_SCRIPT_START_PATH,
         Duration::from_secs(10),
@@ -103,7 +103,7 @@ fn node_test_with_jsx_file_edits() -> Result<(), Box<dyn std::error::Error>> {
 
 #[test]
 #[serial(node)]
-fn node_test_with_css_file_edits() -> Result<(), Box<dyn std::error::Error>> {
+fn node_test_with_css_file_edits() -> TestResult {
     let output = run_example_with_file_change(
         EP_NODE_BASIC_SCRIPT_START_PATH,
         Duration::from_secs(10),
@@ -117,7 +117,7 @@ fn node_test_with_css_file_edits() -> Result<(), Box<dyn std::error::Error>> {
 
 #[test]
 #[serial(node)]
-fn node_test_with_html_file_edits() -> Result<(), Box<dyn std::error::Error>> {
+fn node_test_with_html_file_edits() -> TestResult {
     let output = run_example_with_file_change(
         EP_NODE_BASIC_SCRIPT_START_PATH,
         Duration::from_secs(10),
