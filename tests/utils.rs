@@ -1,12 +1,13 @@
 #![allow(dead_code)]
 
-extern crate assert_cmd;
 use assert_cmd::prelude::*;
 use std::fs::OpenOptions;
 use std::io::{prelude::*, Read};
 use std::path::Path;
 use std::process::{Command, Stdio};
 use std::time::Duration;
+
+pub type TestResult = Result<(), Box<dyn std::error::Error>>;
 
 pub struct CommandOutput {
     pub stdout: String,
