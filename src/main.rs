@@ -1,13 +1,9 @@
-#[macro_use]
-extern crate log;
-#[macro_use]
-extern crate clap;
-
 mod cli;
 mod exec;
 mod watcher;
 
 use cli::Cli;
+use colored::*;
 use std::sync::Arc;
 use std::{
     process::Child,
@@ -40,21 +36,35 @@ fn main() {
 
     watcher::start(cli_args.clone(), lightmon_event_sender.clone());
 
-    println!("lightmon started ({} mode)", cli_args.project_language);
+    println!(
+        "{}",
+        format!("[lightmon] {}", env!("CARGO_PKG_VERSION")).yellow()
+    );
+    println!(
+        "{}",
+        "[lightmon] enter `rs` at any time to restart".yellow()
+    );
+    println!(
+        "{}",
+        format!(
+            "[lightmon] running in {} mode",
+            format!("{}", cli_args.project_language).blue()
+        )
+        .yellow()
+    );
+    println!(
+        "{}",
+        format!("[lightmon] watching {:?}", cli_args.watch_patterns).yellow()
+    );
 
     // event thread
     loop {
         if let Ok(lightmon_event) = lightmon_event_receiver.recv() {
             match lightmon_event {
                 LightmonEvent::KillAndRestartChild => {
-                    debug!("KILL AND RESTART RECEIEVED");
-
                     // kill child
                     if let Ok(mut exec_child) = exec_child_process_receiver.recv() {
-                        match exec_child.kill() {
-                            Ok(_) => debug!("Killed child process."),
-                            Err(e) => debug!("Failed to kill child process! {:?}", e),
-                        }
+                        exec_child.kill().expect("Unable to kill the child process");
 
                         // waiting after killing sounds weird because it is. But, the following is
                         // from the rust doc:
@@ -75,7 +85,6 @@ fn main() {
                     );
                 }
                 LightmonEvent::InitExec => {
-                    debug!("INIT EXEC RECEIVED");
                     exec::start(
                         cli_args.clone(),
                         lightmon_event_sender.clone(),

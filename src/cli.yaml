@@ -2,11 +2,6 @@ name: lightmon
 version: "v0.2.0"
 author: Reagan McFarland <me@reaganmcf.com>, Alay Shah
 about: A light-weight, cross-platform, language agnostic \"run code on file change\" tool, inspired by Nodemon
-args:
-  - verbose:
-      short: v
-      long: verbose
-      help: Use verbose output
 subcommands:
   - rust:
       about: "Use rust preset for lightmon. Lightmon will detect the type of rust project you are working in automatically.\n Note: if you want to use a custom cargo command, you can provide the subcommand and any arguments and the exec command will get resolved accordingly."

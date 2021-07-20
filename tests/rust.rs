@@ -1,7 +1,6 @@
 mod utils;
 
-#[macro_use]
-extern crate serial_test;
+use serial_test::serial;
 use std::time::Duration;
 use utils::*;
 
@@ -9,9 +8,13 @@ const EP_RUST_BASIC_BIN_PATH: &str = "./tests/example_projects/rust_basic_bin";
 const EP_RUST_BASIC_LIB_PATH: &str = "./tests/example_projects/rust_basic_lib";
 const EP_RUST_INVALID_PATH: &str = "./tests/example_projects/rust_invalid";
 
-static BASIC_BIN_CONFIGURATION_EXPECTED: &str = "lightmon started (rust mode)
+static BASIC_BIN_CONFIGURATION_EXPECTED: &str = r#"[lightmon] 0.2.0
+[lightmon] enter `rs` at any time to restart
+[lightmon] running in 🦀 Rust mode
+[lightmon] watching ["*.rs", "Cargo.toml"]
+[lightmon] starting `cargo run`
 Hello, World!
-";
+"#;
 
 static BASIC_BIN_WITH_FILE_EDITS_EXPECTED: &str = "lightmon started (rust mode)
 Hello, World!

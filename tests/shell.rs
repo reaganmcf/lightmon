@@ -1,7 +1,6 @@
-#[macro_use]
-extern crate serial_test;
-
 mod utils;
+
+use serial_test::serial;
 use std::time::Duration;
 use utils::*;
 

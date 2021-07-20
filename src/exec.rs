@@ -1,10 +1,12 @@
 // Contains the method for starting a thread that will run the exec commands in parallel.
 
-use std::process::Command;
-use std::sync::mpsc::Sender;
-use std::sync::Arc;
-use std::thread;
-use std::{io, process::Child};
+use colored::*;
+use std::sync::{mpsc::Sender, Arc};
+use std::{
+    io,
+    process::{Child, Command},
+    thread,
+};
 
 use crate::cli::Cli;
 use crate::LightmonEvent;
@@ -18,8 +20,6 @@ pub(crate) fn start(
     exec_child_process_sender: Sender<Child>,
 ) -> std::thread::JoinHandle<()> {
     thread::spawn(move || {
-        debug!("thread started");
-
         // Build commands from exec commands
         for exec_command in &cli_args.exec_commands {
             // split into components
@@ -28,31 +28,27 @@ pub(crate) fn start(
             for argument in split.iter().skip(1) {
                 cmd.arg(argument);
             }
-            debug!("final cmd = {:?}", cmd);
-            let child = cmd.spawn().unwrap();
-            debug!("child process pid = {:?}", child.id());
-            match exec_child_process_sender.send(child) {
-                Ok(_) => {}
-                Err(_) => {
-                    error!("Unable to send event to main loop. Something seriously went wrong!");
-                    std::process::exit(1);
-                }
-            }
+
+            println!(
+                "{}",
+                format!(
+                    "[lightmon] starting `{}`",
+                    &cli_args.exec_commands.join(" ")
+                )
+                .green()
+            );
+
+            let child = cmd.spawn().expect("Unable to spawn process");
+
+            exec_child_process_sender
+                .send(child)
+                .expect("Unable to send event to main loop. Something seriously went wrong!");
+
+            let mut input = String::new();
             loop {
-                let mut input = String::new();
-                if let Ok(n) = io::stdin().read_line(&mut input) {
+                if let Ok(_) = io::stdin().read_line(&mut input) {
                     if input.eq("rs\n") {
-                        debug!("rs RECEIEVED");
-                        match lightmon_event_sender.send(LightmonEvent::KillAndRestartChild) {
-                            Ok(_) => {}
-                            Err(_) => {
-                                error!("Unable to kill and restart the process. Something seriously went wrong!");
-                                std::process::exit(1);
-                            }
-                        }
-                    } else {
-                        debug!("unknown input, bits read from input {:?}", n);
-                        debug!("input = {:?}", input);
+                        lightmon_event_sender.send(LightmonEvent::KillAndRestartChild).expect("Unable to kill and restart the process. Something seriously went wrong!");
                     }
                 }
             }
