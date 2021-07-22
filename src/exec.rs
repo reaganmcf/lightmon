@@ -46,10 +46,8 @@ pub(crate) fn start(
 
             let mut input = String::new();
             loop {
-                if let Ok(_) = io::stdin().read_line(&mut input) {
-                    if input.eq("rs\n") {
-                        lightmon_event_sender.send(LightmonEvent::KillAndRestartChild).expect("Unable to kill and restart the process. Something seriously went wrong!");
-                    }
+                if io::stdin().read_line(&mut input).is_ok() && input.eq("rs\n") {
+                    lightmon_event_sender.send(LightmonEvent::KillAndRestartChild).expect("Unable to kill and restart the process. Something seriously went wrong!");
                 }
             }
         }

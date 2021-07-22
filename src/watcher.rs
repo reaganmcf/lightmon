@@ -66,11 +66,11 @@ pub(crate) fn start(
                 Ok(_) => {
                     println!(
                         "{}",
-                        format!("[lightmon] Changes detected, Restarting...").bright_yellow()
+                        "[lightmon] Changes detected, Restarting...".bright_yellow()
                     );
                     lightmon_event_sender
                         .send(LightmonEvent::KillAndRestartChild)
-                        .expect(format!("Failed to send restart event to main thread").as_str());
+                        .expect("Failed to send restart event to main thread");
                 }
                 Err(e) => {
                     panic!("Failed to receive event from watcher {:?}", e);
