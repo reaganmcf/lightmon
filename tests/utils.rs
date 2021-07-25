@@ -41,11 +41,10 @@ pub fn run_example(
     std::thread::sleep(sleep_time);
 
     // Kill it
-    if let None = is_going_to_fail {
-        assert!(
-            child.kill().is_ok(),
-            "child process should be able to be killed"
-        );
+    if is_going_to_fail.is_none() {
+        if let Err(e) = child.kill() {
+            panic!("Could not kill child process: {}", e);
+        }
     }
 
     // read stdout and stderr into strings
@@ -53,14 +52,14 @@ pub fn run_example(
     let mut stderr = String::new();
     let std_out_read_attempt = child.stdout.unwrap().read_to_string(&mut stdout);
     let std_err_read_attempt = child.stderr.unwrap().read_to_string(&mut stderr);
-    assert!(
-        std_out_read_attempt.is_ok(),
-        "should always be able to read child stdout"
-    );
-    assert!(
-        std_err_read_attempt.is_ok(),
-        "should always be able to read child stderr"
-    );
+
+    if let Err(e) = std_out_read_attempt {
+        panic!("failed to read stdout: {}", e)
+    }
+
+    if let Err(e) = std_err_read_attempt {
+        panic!("failed to read stderr: {}", e)
+    }
 
     println!("child stdout = '{}'\nchild stderr = '{}'", stdout, stderr);
     Ok(CommandOutput { stdout, stderr })
