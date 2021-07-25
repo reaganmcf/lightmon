@@ -103,24 +103,23 @@ pub fn run_example_with_file_change(
     std::thread::sleep(sleep_time);
 
     // Kill it
-    assert!(
-        lightmon_child.kill().is_ok(),
-        "child process should be able to be killed"
-    );
+    if let Err(e) = lightmon_child.kill() {
+        panic!("Could not kill child process: {}", e);
+    }
 
     // read stdout into string
     let mut stdout = String::new();
     let mut stderr = String::new();
     let std_out_read_attempt = lightmon_child.stdout.unwrap().read_to_string(&mut stdout);
     let std_err_read_attempt = lightmon_child.stderr.unwrap().read_to_string(&mut stderr);
-    assert!(
-        std_out_read_attempt.is_ok(),
-        "should always be able to read child stdout"
-    );
-    assert!(
-        std_err_read_attempt.is_ok(),
-        "should always be able to read child stderr"
-    );
+
+    if let Err(e) = std_out_read_attempt {
+        panic!("failed to read stdout: {}", e)
+    }
+
+    if let Err(e) = std_err_read_attempt {
+        panic!("failed to read stderr: {}", e)
+    }
 
     println!("child stdout = '{}'\nchild stderr = '{}'", stdout, stderr);
     Ok(CommandOutput { stdout, stderr })
