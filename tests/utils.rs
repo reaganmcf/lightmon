@@ -103,6 +103,7 @@ pub fn run_example_with_file_change(
     std::thread::sleep(sleep_time);
 
     // Kill it
+    #[cfg(not(target_os = "win"))]
     if let Err(e) = lightmon_child.kill() {
         panic!("Could not kill child process: {}", e);
     }
