@@ -1,7 +1,8 @@
+#![allow(non_snake_case)]
+
 mod utils;
 
-#[macro_use]
-extern crate serial_test;
+use serial_test::serial;
 use std::time::Duration;
 use utils::*;
 
@@ -9,22 +10,43 @@ const EP_RUST_BASIC_BIN_PATH: &str = "./tests/example_projects/rust_basic_bin";
 const EP_RUST_BASIC_LIB_PATH: &str = "./tests/example_projects/rust_basic_lib";
 const EP_RUST_INVALID_PATH: &str = "./tests/example_projects/rust_invalid";
 
-static BASIC_BIN_CONFIGURATION_EXPECTED: &str = "lightmon started (rust mode)
+fn BASIC_BIN_CONFIGURATION_EXPECTED() -> String {
+    let version = env!("CARGO_PKG_VERSION");
+    format!(
+        r#"[lightmon] {}
+[lightmon] enter `rs` at any time to restart
+[lightmon] running in 🦀 Rust mode
+[lightmon] watching ["*.rs", "Cargo.toml"]
+[lightmon] starting `cargo run`
 Hello, World!
-";
+"#,
+        version
+    )
+}
 
-static BASIC_BIN_WITH_FILE_EDITS_EXPECTED: &str = "lightmon started (rust mode)
+fn BASIC_BIN_WITH_FILE_EDITS_EXPECTED() -> String {
+    let version = env!("CARGO_PKG_VERSION");
+    format!(
+        r#"[lightmon] {}
+[lightmon] enter `rs` at any time to restart
+[lightmon] running in 🦀 Rust mode
+[lightmon] watching ["*.rs", "Cargo.toml"]
+[lightmon] starting `cargo run`
 Hello, World!
-Changes detected, Restarting...
+[lightmon] Changes detected, Restarting...
+[lightmon] starting `cargo run`
 Hello, World!
-";
+"#,
+        version
+    )
+}
 
 #[test]
 #[serial(rust)]
 fn rust_basic_bin_configuration() -> TestResult {
     // Spawn child lightmon process at rust directory
     let output = run_example(EP_RUST_BASIC_BIN_PATH, Duration::from_secs(5), None, None).unwrap();
-    assert_eq!(output.stdout, BASIC_BIN_CONFIGURATION_EXPECTED);
+    assert_eq!(output.stdout, BASIC_BIN_CONFIGURATION_EXPECTED());
     Ok(())
 }
 
@@ -50,7 +72,7 @@ fn rust_invalid_configuration_errors_out() -> TestResult {
     .unwrap();
     assert!(output
         .stderr
-        .contains("ERROR lightmon::cli] Could not find which type of rust project this is."));
+        .contains("Could not find which type of rust project this is."));
     assert!(output.stdout.is_empty());
     Ok(())
 }
@@ -96,6 +118,6 @@ fn rust_basic_bin_test_with_rs_file_edits() -> TestResult {
         "src/test.rs",
     )
     .unwrap();
-    assert_eq!(output.stdout, BASIC_BIN_WITH_FILE_EDITS_EXPECTED);
+    assert_eq!(output.stdout, BASIC_BIN_WITH_FILE_EDITS_EXPECTED());
     Ok(())
 }

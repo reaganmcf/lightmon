@@ -1,11 +1,11 @@
-use notify::poll::PollWatcher;
-use notify::{RecursiveMode, Watcher};
-use std::collections::HashSet;
-use std::ffi::OsStr;
-use std::path::Path;
-use std::sync::Arc;
+use colored::*;
+use notify::{poll::PollWatcher, RecursiveMode, Watcher};
 use std::{
+    collections::HashSet,
+    ffi::OsStr,
+    path::Path,
     sync::mpsc::{channel, Sender},
+    sync::Arc,
     thread::JoinHandle,
 };
 use walkdir::WalkDir;
@@ -42,16 +42,18 @@ pub(crate) fn start(
             .filter_map(|e| e.ok())
         {
             let mut should_watch: bool;
+
             // Check if the file is an explicit one we should watch
             should_watch = explicit_files_to_watch.contains(entry.path().to_str().unwrap());
+
             // Check if the file ends in a type we should watch
             let file_name = entry.file_name().to_str().unwrap();
             let file_ext = Path::new(file_name).extension().and_then(OsStr::to_str);
+
             if let Some(file_ext) = file_ext {
                 should_watch = should_watch || file_types_to_watch.contains(file_ext);
 
                 if should_watch {
-                    debug!("Started watch on {:?}", entry.path().to_str().unwrap());
                     watcher
                         .watch(entry.path().to_str().unwrap(), RecursiveMode::NonRecursive)
                         .unwrap();
@@ -60,21 +62,18 @@ pub(crate) fn start(
         }
 
         loop {
-            debug!("checking events...");
             match rx.recv() {
-                Ok(event) => {
-                    println!("Changes detected, Restarting...");
-                    debug!(
-                        "changes detected {:?}\n Sending restart event to exec",
-                        event
+                Ok(_) => {
+                    println!(
+                        "{}",
+                        "[lightmon] Changes detected, Restarting...".bright_yellow()
                     );
-                    match lightmon_event_sender.send(LightmonEvent::KillAndRestartChild) {
-                        Ok(_) => {}
-                        Err(e) => error!("Failed to send event to exec thread! Reason: {:?}", e),
-                    }
+                    lightmon_event_sender
+                        .send(LightmonEvent::KillAndRestartChild)
+                        .expect("Failed to send restart event to main thread");
                 }
                 Err(e) => {
-                    error!("Failed to receive event from channel {:?}", e);
+                    panic!("Failed to receive event from watcher {:?}", e);
                 }
             }
         }

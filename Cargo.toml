@@ -1,6 +1,6 @@
 [package]
 name = "lightmon"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Reagan McFarland <me@reaganmcf.com>", "Alay Shah"]
 description = "A lightweight, cross-platform, language-agnostic 'run code on file change' tool, inspired by Nodemon"
 homepage = "https://github.com/reaganmcf/lightmon"
@@ -17,9 +17,7 @@ exclude = [
 notify = "4.0.12" 
 clap = {version = "~2.27.0", features = ["yaml"]}
 walkdir = "2"
-log = "0.4.0"
-env_logger = "0.8.3"
-termcolor = "1.1.2"
+colored = "2"
 serde_json = "1.0"
 
 [dev-dependencies]
