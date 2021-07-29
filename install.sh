@@ -276,6 +276,30 @@ is_build_available() {
 	fi
 }
 
+show_help() {
+  cat << EOF
+Usage: $(basename "${BASH_SOURCE[0]}") [-h] [-d]
+
+Installation scripts for lightmon
+
+Available options:
+
+-h      Print this help and exit
+-d      Change installation directory
+EOF
+exit
+}
+
+# use flag -d to install to another directory
+while getopts h:d: flag
+do
+    case "${flag}" in
+      d) BIN_DIR=${OPTARG} ;;
+      h) show_help ;;
+      *) show_help ;;
+    esac
+done
+
 # defaults
 if [ -z "${PLATFORM-}" ]; then
 	PLATFORM="$(detect_platform)"
